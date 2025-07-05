@@ -1,0 +1,123 @@
+package com.ticketingsystem.ticketingsystem.controller;
+
+import com.ticketingsystem.ticketingsystem.dto.*;
+import com.ticketingsystem.ticketingsystem.service.AuthService;
+import com.ticketingsystem.ticketingsystem.service.TicketService;
+import com.ticketingsystem.ticketingsystem.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import org.springframework.data.domain.Pageable;
+
+@RestController
+@RequestMapping("/admin")
+@PreAuthorize(("hasRole('ADMIN')"))
+public class AdminController {
+
+    @Autowired
+    private TicketService ticketService;
+
+    @Autowired
+    private AuthService authService;
+
+    @Autowired
+    private UserService userService;
+
+
+    @PutMapping("/tickets/{id}/close") // Admin closes any ticket manually
+    public ResponseEntity<String> closeTicketbyAdmin(@PathVariable Long id) {
+        ticketService.closeTicketbyAdmin(id);
+        return ResponseEntity.ok("Ticket Closed");
+    }
+
+
+    @PutMapping("/tickets/{id}/edit") // Admin can edit any ticket
+    public ResponseEntity<String> updateTicketbyAdmin(
+            @PathVariable Long id, @RequestBody AdminUpdateTicketDTO dto
+            ){
+        ticketService.updateTicketbyAdmin(id, dto);
+        return ResponseEntity.ok("Ticket Updated successfully");
+    }
+
+    @PutMapping("/password") // Admin can change any user's password
+    public ResponseEntity<String> changePasswordbyAdmin(
+            @RequestBody AdminChangePasswordDTO dto
+            ){
+        authService.changePasswordbyAdmin(dto.getUsername(), dto.getNewPassword());
+        return ResponseEntity.ok("Password Updated successfully");
+    }
+
+
+    @DeleteMapping("/tickets/{id}") // Admin can delete any ticket
+    public ResponseEntity<String> deleteTicket(@PathVariable Long id){
+        ticketService.deleteTicket(id, null, true);
+        return ResponseEntity.ok("Ticket deleted successfully");
+    }
+
+    @DeleteMapping("/users/{username}") // Admin can delete any user
+    public ResponseEntity<String> deleteUserbyAdmin(@PathVariable String username) {
+        userService.deleteUser(username, null, true);
+        return ResponseEntity.ok("User deleted successfully");
+    }
+
+    @GetMapping("/users") // Admin can see a list of all users
+    public ResponseEntity<PaginatedResponseDTO<UserDTO>> viewAllUsers(
+            @PageableDefault(size = 10, sort = "username") Pageable pageable){
+
+        Page<UserDTO> usersList = userService.viewAllUsers(pageable);
+        return ResponseEntity.ok(new PaginatedResponseDTO<>(usersList));
+    }
+
+
+    @GetMapping("/tickets/{username}/open") // Admin can see user specific open tickets
+    public ResponseEntity<PaginatedResponseDTO<ViewTicketDTO>> viewUserOpenTickets(
+            @PathVariable String username,
+            @RequestParam(required = false) String type,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        Page<ViewTicketDTO> tickets = ticketService.viewOpenTickets(username, type , pageable);
+        return ResponseEntity.ok(new PaginatedResponseDTO<>(tickets));
+    }
+
+
+    @GetMapping("/tickets/{username}/closed") // Admin can see user specific closed tickets
+    public ResponseEntity<PaginatedResponseDTO<ViewTicketDTO>> viewUserClosedTickets(
+            @PathVariable String username,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String risk,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        Page<ViewTicketDTO> tickets = ticketService.viewClosedTickets(username,type, risk, pageable);
+        return ResponseEntity.ok(new PaginatedResponseDTO<>(tickets));
+    }
+
+
+    @GetMapping("/tickets/open") // Admin can see all open tickets
+    public ResponseEntity<PaginatedResponseDTO<ViewTicketDTO>> viewAllOpenTickets (
+            @RequestParam(required = false) String type,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable)
+    {
+
+        Page<ViewTicketDTO> dtoPage = ticketService.viewAllOpenTickets(type, pageable);
+        return ResponseEntity.ok(new PaginatedResponseDTO<>(dtoPage));
+    }
+
+
+    @GetMapping("/tickets/closed") // Admin can see all closed tickets
+    public ResponseEntity<PaginatedResponseDTO<ViewTicketDTO>> viewAllClosedTickets(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String risk
+            ){
+        Page<ViewTicketDTO> closedTickets = ticketService.getAllClosedTickets(type, risk,pageable);
+
+        return ResponseEntity.ok(new PaginatedResponseDTO<>(closedTickets));
+    }
+
+
+}
