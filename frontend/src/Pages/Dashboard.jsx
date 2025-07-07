@@ -6,25 +6,25 @@ import {useNavigate} from "react-router-dom";
 function Dashboard() {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
-    const [message, setMessage] = useState('');
+    // const [message, setMessage] = useState('');
 
     const token = localStorage.getItem('token');
 
-    useEffect(() => {
-
-        axios.get('http://localhost:8080/users/test', {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-            .then(response => {
-                setMessage(response.data);
-            })
-            .catch(error => {
-                console.error("Error fetching protected data: ", error);
-                setMessage("Access Denied");
-            });
-    },[token]);
+    // useEffect(() => {
+    //
+    //     axios.get('http://localhost:8080/users/test', {
+    //         headers: {
+    //             Authorization: `Bearer ${token}`
+    //         }
+    //     })
+    //         .then(response => {
+    //             setMessage(response.data);
+    //         })
+    //         .catch(error => {
+    //             console.error("Error fetching protected data: ", error);
+    //             setMessage("Access Denied");
+    //         });
+    // },[token]);
 
     useEffect(() => {
         const storedUsername = localStorage.getItem('username');
@@ -33,14 +33,14 @@ function Dashboard() {
         }
     }, []);
 
-    const [showDropdown, setShowDropdown] = useState(false);
+    // const [showDropdown, setShowDropdown] = useState(false);
 
     return (
     <div>
         <div className="w-full flex flex-col items-center justify-center px-6 py-10">
             <div className="bg-white p-6 rounded shadow w-full justify-center items-center text-center">
                 <h2 className="text-xl font-semibold mb-2">Welcome, {username}</h2>
-                <p className="text-gray-700">{message}</p>
+                {/*<p className="text-gray-700">{message}</p>*/}
             </div>
             <div className="px-6 py-8">
                 <div className="flex gap-4 flex-wrap mb-6">
