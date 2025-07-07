@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {useNavigate} from "react-router-dom";
 
 
@@ -7,11 +7,26 @@ function Navbar() {
     const [username, setUsername] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
 
+    const dropdownRef = useRef(null);
+
     useEffect(() => {
         const storedUsername = localStorage.getItem('username');
         if(storedUsername) {
             setUsername(storedUsername);
         }
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowDropdown(false);
+            }
+        };
+
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
     }, []);
 
     return(
