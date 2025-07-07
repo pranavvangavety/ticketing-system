@@ -31,10 +31,10 @@ public class UserController {
         return ResponseEntity.ok("Your account has been deleted successfully");
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("Hello, World!");
-    }
+//    @GetMapping("/test")
+//    public void test() {
+//        return ResponseEntity.ok("Hello, World!");
+//    }
 
     @GetMapping("/profile")
     public ResponseEntity<UserDTO> getProfile(Principal principal) {
