@@ -31,9 +31,11 @@ function Navbar() {
 
     return(
         <div className="bg-blue-600 text-white px-6 py-3 shadow flex justify-between items-center">
-            <h1 className="text-xl font-semibold">Ticketing System</h1>
-            <div className="relative">
-                <button onClick={() => setShowDropdown(!showDropdown)} className="flex items-center gap-1 bg-blue-700 px-3 py-1 rounded hover:bg-blue-800 focus:outline-none focus:ring-2">
+            <button onClick={() => navigate("/dashboard")} className="text-xl font-semibold focus:outline-none hover:text-neutral-300">
+                Ticketing System
+            </button>
+            <div className="relative" ref={dropdownRef}>
+                <button onClick={() => setShowDropdown(!showDropdown)} className="flex items-center gap-1 bg-blue-700 px-3 py-1 rounded hover:bg-blue-800 focus:outline-none focus:ring-1">
                     {username}<span>▼</span>
                 </button>
                 {showDropdown && (
