@@ -6,6 +6,12 @@ function ViewTickets() {
 
     const [openTickets, setOpenTickets] = useState([]);
     const [closedTickets, setClosedTickets] = useState([]);
+    const [toast, setToast] = useState({message: '', type: ''});
+    const [confirmModal, setConfirmModal] = useState({
+        show: false,
+        ticketId: null,
+    });
+
 
     function formatDate(dateString) {
         const date = new Date(dateString);
@@ -20,23 +26,26 @@ function ViewTickets() {
 
     }
 
-    function handleClose(ticketId) {
-        const confirmClose = window.confirm("Are you sure you want to close this ticket?");
-        if (!confirmClose) return;
+    function handleClose() {
 
         const token = localStorage.getItem('token');
 
-        axios.put(`http://localhost:8080/tickets/${ticketId}/close`, {}, {
+        axios.put(`http://localhost:8080/tickets/${confirmModal.ticketId}/close`, {}, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         })
             .then(() => {
-                window.location.reload();
+                setToast({message: "✅ Ticket closed successfully!", type: "success"});
+                setConfirmModal({show:false, ticketId: null})
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000)
             })
             .catch((err) => {
                 console.error("Error closing ticket:", err);
-                alert("Failed to closed ticket");
+                setToast({message: "❌ Failed to close ticket", type: "error"});
+                setTimeout(() => setToast({message: '', type: ''}), 3000);
             });
     }
 
@@ -64,6 +73,38 @@ function ViewTickets() {
 
     return(
         <div>
+
+            {toast.message && (
+                <div className={`
+                    fixed top-5 right-5 z-50 px-4 py-2 rounded shadow-lg text-white animate-fadeIn
+                    ${toast.type === `success` ? `bg-green-600`: 
+                    toast.type === `error` ? 'bg-red-600':
+                    `bg-gray-800`}   
+                `}>
+                    {toast.message}
+                </div>
+            )}
+
+            {confirmModal.show && (
+                <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
+
+                    <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-sm text-center">
+
+                        <h3 className="text-lg font-semibold mb-4">Close Ticket</h3>
+                        <p className="text-sm mb-6">Are you sure you want to close ticket #{confirmModal.ticketId}</p>
+                        <div className="flex justify-center gap-4">
+                            <button onClick={handleClose} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+                                Yes, Close
+                            </button>
+                            <button onClick={() => setConfirmModal({show: false, ticketId: null})} className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
             <h2 className="font-bold text-gray-800 text-center justify-items text-xl">View Tickets</h2>
 
             <BackButton />
@@ -103,8 +144,8 @@ function ViewTickets() {
                                 <td className="px-4 py-2">{formatDate(ticket.lastUpdated)}</td>
                                 <td className="px-4 py-2">{ticket.status}</td>
                                 <td className="px-4 py-2">
-                                    <button onClick={() => handleClose(ticket.id)}
-                                            className="text-red-600 text-sm hover:underline hover:text-red-800">Close</button>
+                                    <button onClick={() => setConfirmModal({show: true, ticketId: ticket.id})}
+                                            className="bg-red-100 text-red-700 font-medium px-3 py-1 rounded-lg text-sm hover:bg-red-200 transition">Close</button>
                                 </td>
 
                             </tr>
