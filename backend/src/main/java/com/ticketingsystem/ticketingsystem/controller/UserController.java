@@ -5,6 +5,7 @@ import com.ticketingsystem.ticketingsystem.service.TicketService;
 import com.ticketingsystem.ticketingsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,11 +31,6 @@ public class UserController {
 
         return ResponseEntity.ok("Your account has been deleted successfully");
     }
-
-//    @GetMapping("/test")
-//    public void test() {
-//        return ResponseEntity.ok("Hello, World!");
-//    }
 
     @GetMapping("/profile")
     public ResponseEntity<UserDTO> getProfile(Principal principal) {

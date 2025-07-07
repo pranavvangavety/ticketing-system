@@ -10,7 +10,11 @@ import {jwtDecode} from "jwt-decode";
 import {useState, useEffect} from "react";
 import Layout from "./components/Layout.jsx";
 import TicketConfirmation from "./Pages/TicketConfirmation.jsx";
-
+import AdminDashboard from "./Pages/AdminDashboard.jsx";
+import AdminRoute from "./components/AdminRoute.jsx";
+import Unauthorized from "./Pages/Unauthorized.jsx";
+import AdminViewTickets from "./Pages/AdminViewTickets.jsx";
+import AdminViewUsers from "./Pages/AdminViewUsers.jsx";
 
 function App() {
 
@@ -24,7 +28,10 @@ function App() {
             setUsername(decoded.sub)
             const roles = decoded.authorities || [];
             if(roles.includes("ROLE_ADMIN")) {
+                localStorage.setItem("role", "ROLE_ADMIN");
                 setIsAdmin(true);
+            }else{
+                localStorage.setItem("role", "ROLE_USER");
             }
         }
     }, []);
@@ -78,6 +85,42 @@ function App() {
                             <ProtectedRoute>
                                 <Profile username={username} isAdmin={isAdmin}/>
                             </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/admin"
+                        element={
+                            <ProtectedRoute>
+                                <AdminRoute>
+                                    <AdminDashboard />
+                                </AdminRoute>
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path = "/unauthorized"
+                        element={<Unauthorized />}
+                    />
+
+                    <Route
+                        path="/admin/tickets"
+                        element = {
+                            <ProtectedRoute>
+                                <AdminRoute>
+                                    <AdminViewTickets />
+                                </AdminRoute>
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/admin/users"
+                        element={
+                        <ProtectedRoute>
+                            <AdminViewUsers />
+                        </ProtectedRoute>
                         }
                     />
 

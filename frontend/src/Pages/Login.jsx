@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
+import {jwtDecode} from "jwt-decode";
 
 function Login() {
 
@@ -19,12 +20,26 @@ function Login() {
             password: password
         })
             .then(response => {
+
                 console.log("Login success: ", response.data)
 
                 localStorage.setItem('token', response.data.token);
-                localStorage.setItem('username', username)
-                console.log("Navigating to dashboard ")
-                navigate('/dashboard');
+
+                const decoded = jwtDecode(response.data.token);
+                const role = decoded.authorities?.[0];
+
+
+                localStorage.setItem("role", role);
+                localStorage.setItem('username', username);
+
+                if(role === "ROLE_ADMIN") {
+                    console.log("Navigating to Admin dashboard ")
+                    navigate("/admin");
+                } else {
+                    console.log("Navigating to dashboard ")
+                    navigate("/dashboard");
+                }
+
             })
             .catch(error => {
                 setErrorMessage(error.response?.data?.message || 'Login Failed');

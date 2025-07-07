@@ -28,7 +28,6 @@ public class AdminController {
     @Autowired
     private UserService userService;
 
-
     @PutMapping("/tickets/{id}/close") // Admin closes any ticket manually
     public ResponseEntity<String> closeTicketbyAdmin(@PathVariable Long id) {
         ticketService.closeTicketbyAdmin(id);
