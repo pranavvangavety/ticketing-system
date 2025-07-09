@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -24,6 +25,9 @@ public class User {
     @Column(nullable = false, unique = true, length = 20)
     private String empid;
 
+    @Column(name = "last_login")
+    private LocalDateTime lastLogin;
+
     //No-argument Constructor
     public User(){
 
@@ -35,6 +39,14 @@ public class User {
         this.name = name;
         this.email = email;
         this.empid = empid;
+    }
+
+    public LocalDateTime getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(LocalDateTime lastLogin) {
+        this.lastLogin = lastLogin;
     }
 
 

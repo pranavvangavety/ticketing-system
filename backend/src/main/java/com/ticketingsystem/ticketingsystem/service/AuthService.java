@@ -13,6 +13,8 @@ import com.ticketingsystem.ticketingsystem.repository.AuthRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -115,9 +117,17 @@ public class AuthService {
 
         String token = jwtUtil.generateToken(userDetails);
 
+        User user = userRepository.findById(dto.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        user.setLastLogin(LocalDateTime.now());
+        userRepository.save(user);
+
         logger.info(" {} logged in at {}", auth.getUsername(), LocalDateTime.now());
 
-        return new LoginResponse(true, token);
+        System.out.println("===> Sending lastLogin: " + user.getLastLogin());
+
+
+        return new LoginResponse(true, token, user.getLastLogin());
 
     }
 
@@ -194,8 +204,8 @@ public class AuthService {
     }
 
     private void verifyCaptcha(String token) {
-        String secret = "6LeR9HwrAAAAAMsWKUTk-iiZTZBLv_RuCPCPwdJ9";
-        String url = "http://www.google.com/recaptcha/api/siteverify";
+        String secret = "6LcKF30rAAAAABccVRxvgBu33Ms9yUYuhyDFkrl9"; // Your actual secret
+        String url = "https://www.google.com/recaptcha/api/siteverify"; // ✅ https instead of http
 
         RestTemplate restTemplate = new RestTemplate();
 
@@ -203,7 +213,10 @@ public class AuthService {
         params.add("secret", secret);
         params.add("response", token);
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED); // ✅ Add this line
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers); // ✅ Include headers
 
         ResponseEntity<RecaptchaResponse> response =
                 restTemplate.postForEntity(url, request, RecaptchaResponse.class);
@@ -215,6 +228,7 @@ public class AuthService {
             throw new InvalidCredentialsException("reCAPTCHA verification failed");
         }
     }
+
 
 
 }

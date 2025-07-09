@@ -33,6 +33,12 @@ public class AuthDTO {
         this.recaptchaToken = recaptchaToken;
     }
 
+    public AuthDTO(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+
     public String getUsername() {
         return username;
     }
