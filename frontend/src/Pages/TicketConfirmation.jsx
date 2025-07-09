@@ -1,12 +1,20 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import successIcon from "../assets/Confirmation.png";
+import axios from "axios";
 
 function TicketConfirmation() {
     const location = useLocation();
     const navigate = useNavigate();
 
     const { ticketId, title, type, createdDateTime } = location.state || {};
+
+    useEffect(() => {
+        document.body.classList.add('no-scroll');
+        return () => {
+            document.body.classList.remove('no-scroll');
+        };
+    }, []);
 
     if (!ticketId) {
         return (

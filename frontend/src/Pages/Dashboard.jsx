@@ -13,6 +13,14 @@ function Dashboard() {
         }
     }, []);
 
+    useEffect(() => {
+        document.body.classList.add('no-scroll');
+        return () => {
+            document.body.classList.remove('no-scroll');
+        };
+    }, []);
+
+
     return (
         <div className="w-full flex flex-col items-center justify-center px-6 py-12">
 

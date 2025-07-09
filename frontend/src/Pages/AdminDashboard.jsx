@@ -1,9 +1,17 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Users, FolderOpen } from "lucide-react";
 
 function AdminDashboard() {
     const navigate = useNavigate();
+
+    useEffect(() => {
+        document.body.classList.add('no-scroll');
+        return () => {
+            document.body.classList.remove('no-scroll');
+        };
+    }, []);
+
 
     return (
         <div className="flex flex-col items-center justify-center py-12 px-6">

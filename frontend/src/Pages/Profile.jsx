@@ -26,6 +26,13 @@ function Profile() {
     const [toast, setToast] = useState({ message: "", type: "" });
 
     useEffect(() => {
+        document.body.classList.add('no-scroll');
+        return () => {
+            document.body.classList.remove('no-scroll');
+        };
+    }, []);
+
+    useEffect(() => {
         const token = localStorage.getItem('token');
         axios.get('http://localhost:8080/users/profile', {
             headers: { Authorization: `Bearer ${token}` }

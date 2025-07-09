@@ -14,6 +14,12 @@ function AdminViewUsers() {
         user: null,
     });
 
+    useEffect(() => {
+        document.body.classList.add("no-scroll");
+        return () => document.body.classList.remove("no-scroll");
+    }, []);
+
+
 
     useEffect(() => {
         const token = localStorage.getItem("token");
