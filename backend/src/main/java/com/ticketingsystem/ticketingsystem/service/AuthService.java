@@ -119,15 +119,22 @@ public class AuthService {
 
         User user = userRepository.findById(dto.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        user.setLastLogin(LocalDateTime.now());
+
+        LocalDateTime previousLogin = user.getLastLogin();
+        System.out.println("→ PREVIOUS LOGIN from DB: " + previousLogin);
+
+        LocalDateTime now = LocalDateTime.now();
+        user.setLastLogin(now);
         userRepository.save(user);
+
+        System.out.println("→ NEW LOGIN stored in DB: " + now);
 
         logger.info(" {} logged in at {}", auth.getUsername(), LocalDateTime.now());
 
         System.out.println("===> Sending lastLogin: " + user.getLastLogin());
 
 
-        return new LoginResponse(true, token, user.getLastLogin());
+        return new LoginResponse(true, token, previousLogin);
 
     }
 

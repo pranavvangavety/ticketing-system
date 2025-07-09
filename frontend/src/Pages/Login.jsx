@@ -47,6 +47,7 @@ function Login() {
 
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('lastLogin', response.data.lastLogin);
+                console.log("Backend lastLogin:", response.data.lastLogin);
 
 
                 const decoded = jwtDecode(response.data.token);
