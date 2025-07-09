@@ -12,13 +12,38 @@ function CreateTicket() {
     const [type, setType] = useState('');
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
+    const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
+
 
     useEffect(() => {
+        console.log("Loading CreateTicket, trying to load draft...");
+        const savedDraft = localStorage.getItem("ticketDraft");
+        if (savedDraft) {
+            const { title, description, type } = JSON.parse(savedDraft);
+            console.log("Draft found:", { title, description, type });
+            setTitle(title || '');
+            setDescription(description || '');
+            setType(type || '');
+        }
+
+        setHasLoadedDraft(true); // ✅ wait until after restoring
+
         document.body.classList.add('no-scroll');
         return () => {
             document.body.classList.remove('no-scroll');
         };
     }, []);
+
+
+    useEffect(() => {
+        if (!hasLoadedDraft) return; // ✅ prevent early overwrite
+        const draft = { title, description, type };
+        console.log("Saving draft:", draft);
+        localStorage.setItem("ticketDraft", JSON.stringify(draft));
+    }, [title, description, type, hasLoadedDraft]);
+
+
+
 
     const validate = () => {
         const newErrors = {};
@@ -35,6 +60,8 @@ function CreateTicket() {
         setLoading(true);
 
         const token = localStorage.getItem('token');
+        const role = localStorage.getItem("role");
+        const isAdmin = role === "ROLE_ADMIN";
 
         try {
             const response = await axios.post(
@@ -48,9 +75,13 @@ function CreateTicket() {
                     ticketId: response.data.id,
                     title: response.data.title,
                     type: response.data.type,
-                    createdDateTime: response.data.createdAt
+                    createdDateTime: response.data.createdAt,
+                    isAdmin
                 }
             });
+
+            localStorage.removeItem("ticketDraft");
+
         } catch (error) {
             console.error("Ticket Creation failed:", error);
             alert(error.response?.data?.message || "Failed to create ticket.");

@@ -8,7 +8,7 @@ function BackButton({label = "Dashboard"}) {
     const path = role === "ROLE_ADMIN" ? "/admin" : "/dashboard";
 
     return(
-      <button onClick={() => navigate(path)} className="mb-6 inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium">
+      <button type="button" onClick={() => navigate(path)} className="mb-6 inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium">
           ← Back to {label}
       </button>
     );
