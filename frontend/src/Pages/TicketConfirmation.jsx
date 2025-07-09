@@ -49,7 +49,7 @@ function TicketConfirmation() {
 
                 <div className="flex flex-col sm:flex-row justify-center gap-4">
                     <button
-                        onClick={() => navigate("/dashboard")}
+                        onClick={() => navigate(isAdmin ? "/admin" :"/dashboard")}
                         className="px-5 py-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition focus:outline-none focus:ring-2 focus:ring-green-400"
                     >
                         Return to Dashboard
