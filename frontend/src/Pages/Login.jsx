@@ -46,6 +46,8 @@ function Login() {
                 console.log("Login success: ", response.data)
 
                 localStorage.setItem('token', response.data.token);
+                localStorage.setItem('lastLogin', response.data.lastLogin);
+
 
                 const decoded = jwtDecode(response.data.token);
                 const role = decoded.authorities?.[0];
@@ -105,7 +107,7 @@ function Login() {
 
                     <div className="flex justify-center my-4">
                         <ReCAPTCHA
-                            sitekey="6LeR9HwrAAAAAF2M90Pr2CeTlG5A7Xg3HctWze1z"
+                            sitekey="6LcKF30rAAAAADLPuZOzauGCipNJQr4___zPf-8w"
                             onChange={handleCaptchaChange}
                         />
                     </div>
