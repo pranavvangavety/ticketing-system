@@ -26,7 +26,7 @@ function CreateTicket() {
             setType(type || '');
         }
 
-        setHasLoadedDraft(true); // ✅ wait until after restoring
+        setHasLoadedDraft(true);
 
         document.body.classList.add('no-scroll');
         return () => {
@@ -36,7 +36,7 @@ function CreateTicket() {
 
 
     useEffect(() => {
-        if (!hasLoadedDraft) return; // ✅ prevent early overwrite
+        if (!hasLoadedDraft) return;
         const draft = { title, description, type };
         console.log("Saving draft:", draft);
         localStorage.setItem("ticketDraft", JSON.stringify(draft));
