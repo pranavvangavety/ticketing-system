@@ -1,17 +1,17 @@
 import React from "react";
-import {useLocation, useNavigate} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import successIcon from "../assets/Confirmation.png";
 
 function TicketConfirmation() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const {ticketId, title, type, createdDateTime} = location.state || {};
+    const { ticketId, title, type, createdDateTime } = location.state || {};
 
-    if(!ticketId) {
+    if (!ticketId) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-100">
-                <p className="text-lg text-gray-700"> No ticket data found</p>
+                <p className="text-lg text-gray-700">No ticket data found</p>
             </div>
         );
     }
@@ -19,50 +19,43 @@ function TicketConfirmation() {
     const [date, time] = createdDateTime.split("T");
 
     return (
-
         <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-            <div className="bg-white border p-8 rounded shadow text-center max-w-md w-full">
-
+            <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-200 max-w-lg w-full text-center animate-fade-in">
                 <img
-                    src= {successIcon}
-                    alt="success"
-                    className="mx-auto mb-6 w-20"
+                    src={successIcon}
+                    alt="Ticket Created"
+                    className="w-24 mx-auto mb-6"
                 />
 
-                <h2 className="text-xl font-bold mb-6"> Ticket created successfully!</h2>
+                <h2 className="text-2xl font-semibold text-green-600 mb-4">
+                    Ticket Created Successfully!
+                </h2>
 
-
-                <div className="text-left font-mono text-base mb-8">
-
-                    <p><strong>Ticket ID</strong> : {ticketId}</p>
-                    <p><strong>Category</strong> : {type}</p>
-                    <p><strong>Title</strong> : {title}</p>
-                    <p><strong>Created On</strong> : {date}</p>
-                    <p><strong>At</strong> : {time}</p>
-
+                <div className="bg-gray-50 rounded-md p-5 text-left text-gray-800 mb-8 space-y-2">
+                    <p><span className="font-medium">Ticket ID:</span> {ticketId}</p>
+                    <p><span className="font-medium">Category:</span> {type}</p>
+                    <p><span className="font-medium">Title:</span> {title}</p>
+                    <p><span className="font-medium">Created On:</span> {date}</p>
+                    <p><span className="font-medium">At:</span> {time}</p>
                 </div>
 
-                <div className="flex gap-4 justify-center">
-                    <button onClick={() => navigate("/dashboard")}
-                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+                <div className="flex flex-col sm:flex-row justify-center gap-4">
+                    <button
+                        onClick={() => navigate("/dashboard")}
+                        className="px-5 py-2 rounded-full bg-green-500 text-white hover:bg-green-600 transition focus:outline-none focus:ring-2 focus:ring-green-400"
                     >
-                        Return to dashboard
+                        Return to Dashboard
                     </button>
-
-                    <button onClick={() => navigate("/view-tickets")}
-                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                    <button
+                        onClick={() => navigate("/view-tickets")}
+                        className="px-5 py-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-400"
                     >
-                        View Tickets
+                        View My Tickets
                     </button>
                 </div>
-
-
             </div>
-
         </div>
-
     );
-
 }
 
 export default TicketConfirmation;
