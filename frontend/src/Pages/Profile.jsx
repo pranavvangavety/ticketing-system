@@ -4,6 +4,15 @@ import BackButton from "../components/BackButton.jsx";
 import { useNavigate } from "react-router-dom";
 import { User, Lock, Trash2, CheckCircle, XCircle } from "lucide-react";
 
+
+function isValidPassword(password) {
+    const lengthValid = password.length >= 8;
+    const letter = /[A-Za-z]/.test(password);
+    const number = /[0-9]/.test(password);
+    const special = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    return lengthValid && letter && number && special;
+}
+
 function Profile() {
     const navigate = useNavigate();
     const role = localStorage.getItem("role");
@@ -27,10 +36,22 @@ function Profile() {
 
     const handleChangePassword = async (e) => {
         e.preventDefault();
-        if (newPassword !== confirmPassword) {
-            alert("New passwords do not match");
+
+        if (!oldPassword || !newPassword || !confirmPassword) {
+            alert("All fields are required.");
             return;
         }
+
+        if (!isValidPassword(newPassword)) {
+            alert("New password must be at least 8 characters and include a letter, number, and special character.");
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            alert("New passwords do not match.");
+            return;
+        }
+
 
         try {
             const token = localStorage.getItem('token');
@@ -42,14 +63,22 @@ function Profile() {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            setToast({ message: "✅ Password updated", type: "success" });
-            setShowModal(false);
+            setShowModal(false); // 👈 hide modal immediately
             setOldPassword('');
             setNewPassword('');
             setConfirmPassword('');
+            setToast({ message: "✅ Password updated. Please log in again.", type: "success" });
+
+            setTimeout(() => {
+                localStorage.removeItem("token");
+                localStorage.removeItem("role");
+                localStorage.removeItem("username");
+                navigate("/");
+            }, 2000);
         } catch (err) {
             alert(err.response?.data?.message || "Error changing password.");
         }
+
     };
 
     const handleDeleteAccount = () => {
