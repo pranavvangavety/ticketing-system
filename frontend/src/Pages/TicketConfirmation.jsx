@@ -7,7 +7,7 @@ function TicketConfirmation() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const { ticketId, title, type, createdDateTime } = location.state || {};
+    const { ticketId, title, type, createdDateTime, isAdmin } = location.state || {};
 
     useEffect(() => {
         document.body.classList.add('no-scroll');
@@ -55,7 +55,7 @@ function TicketConfirmation() {
                         Return to Dashboard
                     </button>
                     <button
-                        onClick={() => navigate("/view-tickets")}
+                        onClick={() => navigate(isAdmin ? "/admin/created-tickets" : "/view-tickets")}
                         className="px-5 py-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-400"
                     >
                         View My Tickets

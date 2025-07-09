@@ -118,5 +118,21 @@ public class AdminController {
         return ResponseEntity.ok(new PaginatedResponseDTO<>(closedTickets));
     }
 
+    @GetMapping("/tickets/by-admin/open")
+    public ResponseEntity<PaginatedResponseDTO<ViewTicketDTO>> viewAdminOpenTickets(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<ViewTicketDTO> ticketPage = ticketService.getAdminOpenTickets(pageable);
+
+        return ResponseEntity.ok(new PaginatedResponseDTO<>(ticketPage));
+    }
+
+    @GetMapping("/tickets/by-admin/closed")
+    public ResponseEntity<PaginatedResponseDTO<ViewTicketDTO>> viewAdminClosedTickets(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<ViewTicketDTO> ticketPage = ticketService.getAdminClosedTickets(pageable);
+
+        return ResponseEntity.ok(new PaginatedResponseDTO<>(ticketPage));
+    }
+
 
 }

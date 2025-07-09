@@ -389,6 +389,44 @@ public class TicketService {
         ));
     };
 
+    // Admin can see admin created open tickets
+    public Page<ViewTicketDTO> getAdminOpenTickets(Pageable pageable) {
+        logger.info("Admin created open tickets viewed");
+
+        Page<Ticket> page = ticketRepository.findByCreatedBy_UsernameAndStatusNot("admin", TicketStatus.CLOSED, pageable);
+
+        return page.map(ticket -> new ViewTicketDTO(
+                ticket.getId(),
+                ticket.getCreatedBy().getUsername(),
+                ticket.getType(),
+                ticket.getTitle(),
+                ticket.getDescription(),
+                ticket.getCreatedAt(),
+                ticket.getLastupdated(),
+                ticket.getStatus()
+        ));
+    }
+
+    // Admin can see admin created closed tickets
+    public Page<ViewTicketDTO> getAdminClosedTickets(Pageable pageable) {
+        logger.info("Admin created closed tickets viewed");
+
+        Page<Ticket> page = ticketRepository.findByCreatedBy_UsernameAndStatus("admin",TicketStatus.CLOSED, pageable);
+
+        return page.map(ticket -> new ViewTicketDTO(
+                        ticket.getId(),
+                        ticket.getCreatedBy().getUsername(),
+                        ticket.getType(),
+                        ticket.getTitle(),
+                        ticket.getDescription(),
+                        ticket.getCreatedAt(),
+                        ticket.getClosedOn(),
+                        ticket.getLastupdated(),
+                        ticket.getStatus(),
+                        ticket.getRisk()
+        ));
+
+    }
 
 }
 

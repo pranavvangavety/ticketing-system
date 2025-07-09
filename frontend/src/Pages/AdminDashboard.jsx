@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Users, FolderOpen } from "lucide-react";
+import { Plus, Users, FolderOpen , ClipboardList} from "lucide-react";
 
 function AdminDashboard() {
     const navigate = useNavigate();
@@ -27,7 +27,7 @@ function AdminDashboard() {
                         <Plus className="w-7 h-7 text-teal-800 group-hover:scale-110 transition-transform duration-200" />
                     </div>
                     <span className="font-bold text-lg">Create Ticket</span>
-                    <span className="text-sm text-teal-700">Start a new support request</span>
+                    <span className="text-sm text-teal-700">Create a new ticket</span>
                 </button>
 
                 <button
@@ -38,7 +38,7 @@ function AdminDashboard() {
                         <FolderOpen className="w-7 h-7 text-indigo-800 group-hover:scale-110 transition-transform duration-200" />
                     </div>
                     <span className="font-bold text-lg">View Tickets</span>
-                    <span className="text-sm text-indigo-700">Check all submitted issues</span>
+                    <span className="text-sm text-indigo-700">Check all submitted tickets</span>
                 </button>
 
                 <button
@@ -49,8 +49,21 @@ function AdminDashboard() {
                         <Users className="w-7 h-7 text-amber-800 group-hover:scale-110 transition-transform duration-200" />
                     </div>
                     <span className="font-bold text-lg">View Users</span>
-                    <span className="text-sm text-amber-700">Manage registered accounts</span>
+                    <span className="text-sm text-amber-700">Manage registered users</span>
                 </button>
+
+                <button
+                    onClick={() => navigate("/admin/created-tickets")}
+                    className="group animate-pop-in cursor-pointer bg-purple-50 hover:bg-purple-100 hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] text-purple-800 px-6 py-6 rounded-2xl shadow-md transform transition duration-300 hover:-translate-y-1 flex flex-col items-center text-center space-y-3"
+                >
+                    <div className="bg-purple-200 p-3 rounded-full">
+                        <ClipboardList className="w-7 h-7 text-purple-800 group-hover:scale-110 transition-transform duration-200" />
+                    </div>
+
+                    <span className="font-bold text-lg">View Created Tickets</span>
+                    <span className="text-sm text-purple-700">Tickets opened by Admin</span>
+                </button>
+
             </div>
         </div>
     );

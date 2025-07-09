@@ -16,6 +16,7 @@ import Unauthorized from "./Pages/Unauthorized.jsx";
 import AdminViewTickets from "./Pages/AdminViewTickets.jsx";
 import AdminViewUsers from "./Pages/AdminViewUsers.jsx";
 import AdminUserTickets from "./Pages/AdminUserTickets.jsx";
+import AdminCreatedTickets from "./Pages/AdminCreatedTickets.jsx";
 
 function App() {
 
@@ -128,8 +129,21 @@ function App() {
                     <Route
                         path = "/admin/users/:username/tickets"
                         element={
-                        <AdminUserTickets />
+                            <ProtectedRoute>
+                                <AdminUserTickets />
+                            </ProtectedRoute>
                         }
+                    />
+
+                    <Route
+
+                        path = "/admin/created-tickets"
+                        element={
+                            <ProtectedRoute>
+                                <AdminCreatedTickets/>
+                            </ProtectedRoute>
+                        }
+
                     />
 
                 </Route>

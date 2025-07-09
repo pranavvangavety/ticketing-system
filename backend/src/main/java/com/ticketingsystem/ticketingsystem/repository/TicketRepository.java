@@ -17,6 +17,11 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             String username
     );
 
+    Page<Ticket> findByCreatedBy_Username(
+            String username,
+            Pageable pageable
+    );
+
     Page<Ticket> findByStatusNot(
             TicketStatus status,
             Pageable pageable
