@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import {jwtDecode} from "jwt-decode";
+import ReCAPTCHA from 'react-google-recaptcha';
 
 function Login() {
 
@@ -12,12 +13,33 @@ function Login() {
 
     const navigate = useNavigate();
 
+    const handleCaptchaChange = (token) => {
+        setRecaptchaToken(token);
+    };
+
+    const [recaptchaToken, setRecaptchaToken] = useState(null);
+
+
+    useEffect(() => {
+        document.body.classList.add('no-scroll');
+        return () => {
+            document.body.classList.remove('no-scroll');
+        };
+    }, []);
+
     function handleSubmit(e) {
         e.preventDefault();
         console.log("Send in login request", {username, password});
+
+        if (!recaptchaToken) {
+            setErrorMessage("Please complete the CAPTCHA.");
+            return;
+        }
+
         axios.post('http://localhost:8080/auth/login', {
             username: username,
-            password: password
+            password: password,
+            recaptchaToken: recaptchaToken
         })
             .then(response => {
 
@@ -79,6 +101,16 @@ function Login() {
                             className="border border-black rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
                         />
                     </div>
+
+
+                    <div className="flex justify-center my-4">
+                        <ReCAPTCHA
+                            sitekey="6LeR9HwrAAAAAF2M90Pr2CeTlG5A7Xg3HctWze1z"
+                            onChange={handleCaptchaChange}
+                        />
+                    </div>
+
+
 
                     <button type="submit" className="w-full bg-blue-600 text-white px-4 py-2 mt-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-black">Login</button>
                 </form>

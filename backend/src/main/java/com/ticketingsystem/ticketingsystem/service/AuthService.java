@@ -1,20 +1,19 @@
 package com.ticketingsystem.ticketingsystem.service;
 
 
-import com.ticketingsystem.ticketingsystem.dto.ChangePasswordDTO;
-import com.ticketingsystem.ticketingsystem.dto.RegisterDTO;
+import com.ticketingsystem.ticketingsystem.dto.*;
 import com.ticketingsystem.ticketingsystem.exception.InvalidCredentialsException;
 import com.ticketingsystem.ticketingsystem.exception.UsernameAlreadyExistsException;
 import com.ticketingsystem.ticketingsystem.model.PasswordHistory;
 import com.ticketingsystem.ticketingsystem.model.User;
 import com.ticketingsystem.ticketingsystem.repository.PasswordHistoryRepository;
 import com.ticketingsystem.ticketingsystem.security.JwtUtil;
-import com.ticketingsystem.ticketingsystem.dto.AuthDTO;
-import com.ticketingsystem.ticketingsystem.dto.LoginResponse;
 import com.ticketingsystem.ticketingsystem.model.Auth;
 import com.ticketingsystem.ticketingsystem.repository.AuthRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,6 +21,9 @@ import org.springframework.stereotype.Service;
 import com.ticketingsystem.ticketingsystem.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 
 import java.time.LocalDateTime;
@@ -87,6 +89,9 @@ public class AuthService {
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public LoginResponse login(AuthDTO dto) {
+
+        verifyCaptcha(dto.getRecaptchaToken());
+
         Optional<Auth> storedAuth = authRepository.findById(dto.getUsername());
 
         if(storedAuth.isEmpty()){
@@ -186,6 +191,29 @@ public class AuthService {
 
         logger.info("Password changed for {}", username);
 
+    }
+
+    private void verifyCaptcha(String token) {
+        String secret = "6LeR9HwrAAAAAMsWKUTk-iiZTZBLv_RuCPCPwdJ9";
+        String url = "http://www.google.com/recaptcha/api/siteverify";
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("secret", secret);
+        params.add("response", token);
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params);
+
+        ResponseEntity<RecaptchaResponse> response =
+                restTemplate.postForEntity(url, request, RecaptchaResponse.class);
+
+        RecaptchaResponse recaptchaResponse = response.getBody();
+
+        if (recaptchaResponse == null || !recaptchaResponse.isSuccess()) {
+            logger.warn("reCAPTCHA verification failed: {}", recaptchaResponse != null ? recaptchaResponse.getErrorCodes() : "null response");
+            throw new InvalidCredentialsException("reCAPTCHA verification failed");
+        }
     }
 
 

@@ -19,14 +19,18 @@ public class AuthDTO {
     )
     private String password;
 
+    @NotBlank(message = "reCAPTCHA token is required")
+    private String recaptchaToken;
+
     //No-arg constructor
     public AuthDTO(){
 
     }
     //Constructors
-    public AuthDTO(String username, String password) {
+    public AuthDTO(String username, String password, String recaptchaToken) {
         this.username = username;
         this.password = password;
+        this.recaptchaToken = recaptchaToken;
     }
 
     public String getUsername() {
@@ -44,4 +48,13 @@ public class AuthDTO {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public String getRecaptchaToken() {
+        return recaptchaToken;
+    }
+
+    public void setRecaptchaToken(String recaptchaToken) {
+        this.recaptchaToken = recaptchaToken;
+    }
+
 }
