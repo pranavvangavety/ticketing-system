@@ -8,7 +8,9 @@ import com.ticketingsystem.ticketingsystem.model.*;
 import com.ticketingsystem.ticketingsystem.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -244,68 +246,61 @@ public class TicketService {
 
     // User views closed tickets
     // Admin can see user specific closed tickets,
-    public Page<ViewTicketDTO> viewClosedTickets(String username, String type, String risk, Pageable pageable) {
-
-        Page<Ticket> page;
+    public Page<ViewTicketDTO> viewClosedTickets(String username, String type, String risk, String sortField, String sortOrder, int page, int size) {
+        Page<Ticket> pageResult;
 
         logger.info("Closed tickets of {} viewed", username);
 
+        Sort sort = Sort.by(Sort.Direction.fromString(sortOrder), sortField);
+        Pageable pageable = PageRequest.of(page, size, sort);
 
-        if( type != null && risk != null){
+        if (type != null && risk != null) {
             logger.info("Filters added: {}, {}", type, risk);
-
-            page = ticketRepository.findByCreatedBy_UsernameAndStatusAndTypeAndRisk(
+            pageResult = ticketRepository.findByCreatedBy_UsernameAndStatusAndTypeAndRisk(
                     username,
                     TicketStatus.CLOSED,
                     TicketType.valueOf(type),
                     RiskLevel.valueOf(risk),
                     pageable
             );
-
         } else if (type != null) {
             logger.info("Filter added: {}", type);
-            page = ticketRepository.findByCreatedBy_UsernameAndStatusAndType(
+            pageResult = ticketRepository.findByCreatedBy_UsernameAndStatusAndType(
                     username,
                     TicketStatus.CLOSED,
                     TicketType.valueOf(type),
                     pageable
             );
-
-        }else if(risk != null) {
+        } else if (risk != null) {
             logger.info("Filter added: {}", risk);
-
-            page = ticketRepository.findByCreatedBy_UsernameAndStatusAndRisk(
+            pageResult = ticketRepository.findByCreatedBy_UsernameAndStatusAndRisk(
                     username,
                     TicketStatus.CLOSED,
                     RiskLevel.valueOf(risk),
                     pageable
             );
-
-        } else{
-
-            page = ticketRepository.findByCreatedBy_UsernameAndStatus(
+        } else {
+            pageResult = ticketRepository.findByCreatedBy_UsernameAndStatus(
                     username,
                     TicketStatus.CLOSED,
                     pageable
             );
         }
 
-        return page.map(ticket -> {
-
-            return new ViewTicketDTO(
-                    ticket.getId(),
-                    ticket.getCreatedBy().getUsername(),
-                    ticket.getType(),
-                    ticket.getTitle(),
-                    ticket.getDescription(),
-                    ticket.getCreatedAt(),
-                    ticket.getClosedOn(),
-                    ticket.getLastupdated(),
-                    ticket.getStatus(),
-                    ticket.getRisk()
-            );
-        });
+        return pageResult.map(ticket -> new ViewTicketDTO(
+                ticket.getId(),
+                ticket.getCreatedBy().getUsername(),
+                ticket.getType(),
+                ticket.getTitle(),
+                ticket.getDescription(),
+                ticket.getCreatedAt(),
+                ticket.getClosedOn(),
+                ticket.getLastupdated(),
+                ticket.getStatus(),
+                ticket.getRisk()
+        ));
     }
+
 
     // Admin can see all open tickets
     public Page<ViewTicketDTO> viewAllOpenTickets(String type, Pageable pageable){
@@ -367,13 +362,15 @@ public class TicketService {
             logger.info("Filter added: {}", risk);
             page = ticketRepository.findByStatusAndRisk(
                     TicketStatus.CLOSED,
-                    RiskLevel.valueOf(type),
+                    RiskLevel.valueOf(risk),
                     pageable
             );
 
         }else{
             page = ticketRepository.findByStatus(TicketStatus.CLOSED, pageable);
         }
+
+        logger.info("Returning {} closed tickets", page.getTotalElements());
 
         return page.map(ticket -> new ViewTicketDTO(
                 ticket.getId(),
