@@ -1,6 +1,7 @@
 import React, {useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Users, FolderOpen , ClipboardList} from "lucide-react";
+import DashboardCard from "../components/DashboardCard.jsx";
 
 function AdminDashboard() {
     const navigate = useNavigate();
@@ -19,50 +20,38 @@ function AdminDashboard() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
 
-                <button
+                <DashboardCard
+                    title="Create Ticket"
+                    subtext="Create a new ticket"
+                    icon={Plus}
                     onClick={() => navigate("/create-ticket")}
-                    className="group animate-pop-in cursor-pointer bg-teal-50 hover:bg-teal-100 hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] text-teal-800 px-6 py-6 rounded-2xl shadow-md transform transition duration-300 hover:-translate-y-1 flex flex-col items-center text-center space-y-3"
-                >
-                    <div className="bg-teal-200 p-3 rounded-full">
-                        <Plus className="w-7 h-7 text-teal-800 group-hover:scale-110 transition-transform duration-200" />
-                    </div>
-                    <span className="font-bold text-lg">Create Ticket</span>
-                    <span className="text-sm text-teal-700">Create a new ticket</span>
-                </button>
+                    color="teal"
+                />
 
-                <button
+                <DashboardCard
+                    title="View Tickets"
+                    subtext="Check all submitted tickets"
+                    icon={FolderOpen}
                     onClick={() => navigate("/admin/tickets")}
-                    className="group animate-pop-in cursor-pointer bg-indigo-50 hover:bg-indigo-100 hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] text-indigo-800 px-6 py-6 rounded-2xl shadow-md transform transition duration-300 hover:-translate-y-1 flex flex-col items-center text-center space-y-3"
-                >
-                    <div className="bg-indigo-200 p-3 rounded-full">
-                        <FolderOpen className="w-7 h-7 text-indigo-800 group-hover:scale-110 transition-transform duration-200" />
-                    </div>
-                    <span className="font-bold text-lg">View Tickets</span>
-                    <span className="text-sm text-indigo-700">Check all submitted tickets</span>
-                </button>
+                    color="indigo"
+                />
 
-                <button
+                <DashboardCard
+                    title="View Users"
+                    subtext="Manage registered users"
+                    icon={Users}
                     onClick={() => navigate("/admin/users")}
-                    className="group animate-pop-in cursor-pointer bg-amber-50 hover:bg-amber-100 hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] text-amber-800 px-6 py-6 rounded-2xl shadow-md transform transition duration-300 hover:-translate-y-1 flex flex-col items-center text-center space-y-3"
-                >
-                    <div className="bg-amber-200 p-3 rounded-full">
-                        <Users className="w-7 h-7 text-amber-800 group-hover:scale-110 transition-transform duration-200" />
-                    </div>
-                    <span className="font-bold text-lg">View Users</span>
-                    <span className="text-sm text-amber-700">Manage registered users</span>
-                </button>
+                    color="amber"
+                />
 
-                <button
+                <DashboardCard
+                    title="View Created Tickets"
+                    subtext="Tickets opened by Admin"
+                    icon={ClipboardList}
                     onClick={() => navigate("/admin/created-tickets")}
-                    className="group animate-pop-in cursor-pointer bg-purple-50 hover:bg-purple-100 hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] text-purple-800 px-6 py-6 rounded-2xl shadow-md transform transition duration-300 hover:-translate-y-1 flex flex-col items-center text-center space-y-3"
-                >
-                    <div className="bg-purple-200 p-3 rounded-full">
-                        <ClipboardList className="w-7 h-7 text-purple-800 group-hover:scale-110 transition-transform duration-200" />
-                    </div>
+                    color="purple"
+                />
 
-                    <span className="font-bold text-lg">View Created Tickets</span>
-                    <span className="text-sm text-purple-700">Tickets opened by Admin</span>
-                </button>
 
             </div>
         </div>

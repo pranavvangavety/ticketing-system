@@ -10,8 +10,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +27,7 @@ public class TicketController {
     private UserRepository userRepository;
 
     // User creates new Ticket
-    @PostMapping //(/tickets)
+    @PostMapping //(/tickets) //comment
     public ResponseEntity<ViewTicketDTO> createTicket(
             Principal principal,
             @RequestBody @Valid TicketDTO ticketDTO
@@ -40,7 +38,6 @@ public class TicketController {
         User user = userRepository.findById(username)
                 .orElseThrow(() -> new UnauthorizedActionException("User not found"));
 
-//        ticketService.createTicket(user, ticketDTO);
 
         Ticket saved = ticketService.createTicket(user, ticketDTO);
 
@@ -86,21 +83,36 @@ public class TicketController {
     // User views open tickets
     @GetMapping("/open")
     public ResponseEntity<PaginatedResponseDTO<ViewTicketDTO>> viewOpenTickets(
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable, Principal principal,
+            Pageable pageable,
+            Principal principal,
             @RequestParam(required = false) String type) {
 
         Page<ViewTicketDTO> openTickets = ticketService.viewOpenTickets(principal.getName(), type , pageable);
         return ResponseEntity.ok(new PaginatedResponseDTO<>(openTickets));
     }
 
-    // User views closed tickets
     @GetMapping("/closed")
     public ResponseEntity<PaginatedResponseDTO<ViewTicketDTO>> viewClosedTickets(
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable, Principal principal,
+            Principal principal,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortField,
+            @RequestParam(defaultValue = "desc") String sortOrder,
             @RequestParam(required = false) String type,
-            @RequestParam(required = false) String risk) {
-        Page<ViewTicketDTO> closedTickets = ticketService.viewClosedTickets(principal.getName(), type, risk, pageable);
+            @RequestParam(required = false) String risk
+    ) {
+        Page<ViewTicketDTO> closedTickets = ticketService.viewClosedTickets(
+                principal.getName(),
+                type,
+                risk,
+                sortField,
+                sortOrder,
+                page,
+                size
+        );
+
         return ResponseEntity.ok(new PaginatedResponseDTO<>(closedTickets));
     }
+
 }
 
