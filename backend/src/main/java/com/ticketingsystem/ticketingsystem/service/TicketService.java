@@ -212,7 +212,7 @@ public class TicketService {
 
         Page<Ticket> page;
 
-        logger.info("Open tickets of {} viewed by", username);
+        logger.info("Open tickets of {} viewed", username);
 
 
         if(type != null) {
