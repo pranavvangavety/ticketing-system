@@ -93,4 +93,11 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             RiskLevel risk,
             Pageable pageable
     );
+
+    long countByStatus(
+            TicketStatus status
+    );
+
+
+
 }

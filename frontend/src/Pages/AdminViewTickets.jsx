@@ -1,7 +1,11 @@
 import React from "react";
+import { useSearchParams } from "react-router-dom";
 import TicketTableLayout from "../components/TicketTableLayout.jsx";
 
 function AdminViewTickets() {
+    const [searchParams] = useSearchParams();
+    const tabParam = searchParams.get("tab"); // 'open' or 'closed'
+
     return (
         <TicketTableLayout
             title="All Tickets"
@@ -9,6 +13,7 @@ function AdminViewTickets() {
             role="admin"
             showEdit={true}
             showRisk={true}
+            defaultTab={tabParam}
         />
     );
 }

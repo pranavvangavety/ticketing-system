@@ -30,7 +30,43 @@ function DashboardCard({ title, subtext, icon: Icon, onClick, color }) {
             iconBg: "bg-purple-200",
             subtext: "text-purple-700",
         },
+        emerald: {
+            bg: "bg-emerald-50",
+            hoverBg: "hover:bg-emerald-100",
+            text: "text-emerald-800",
+            iconBg: "bg-emerald-200",
+            subtext: "text-emerald-700",
+        },
+        blue: {
+            bg: "bg-blue-50",
+            hoverBg: "hover:bg-blue-100",
+            text: "text-blue-800",
+            iconBg: "bg-blue-200",
+            subtext: "text-blue-700",
+        },
+        yellow: {
+            bg: "bg-yellow-50",
+            hoverBg: "hover:bg-yellow-100",
+            text: "text-yellow-800",
+            iconBg: "bg-yellow-200",
+            subtext: "text-yellow-700",
+        },
+        violet: {
+            bg: "bg-violet-50",
+            hoverBg: "hover:bg-violet-100",
+            text: "text-violet-800",
+            iconBg: "bg-violet-200",
+            subtext: "text-violet-700",
+        },
+        rose: {
+            bg: "bg-rose-50",
+            hoverBg: "hover:bg-rose-100",
+            text: "text-rose-800",
+            iconBg: "bg-rose-200",
+            subtext: "text-rose-700",
+        }
     };
+
 
     const styles = colorMap[color] || colorMap.teal;
 

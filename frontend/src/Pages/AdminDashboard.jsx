@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Users, FolderOpen , ClipboardList} from "lucide-react";
+import { Plus, Users, FolderOpen , ClipboardList, ChartNoAxesColumn} from "lucide-react";
 import DashboardCard from "../components/DashboardCard.jsx";
 
 function AdminDashboard() {
@@ -25,7 +25,7 @@ function AdminDashboard() {
                     subtext="Create a new ticket"
                     icon={Plus}
                     onClick={() => navigate("/create-ticket")}
-                    color="teal"
+                    color="emerald"
                 />
 
                 <DashboardCard
@@ -33,7 +33,7 @@ function AdminDashboard() {
                     subtext="Check all submitted tickets"
                     icon={FolderOpen}
                     onClick={() => navigate("/admin/tickets")}
-                    color="indigo"
+                    color="blue"
                 />
 
                 <DashboardCard
@@ -41,7 +41,7 @@ function AdminDashboard() {
                     subtext="Manage registered users"
                     icon={Users}
                     onClick={() => navigate("/admin/users")}
-                    color="amber"
+                    color="yellow"
                 />
 
                 <DashboardCard
@@ -50,6 +50,14 @@ function AdminDashboard() {
                     icon={ClipboardList}
                     onClick={() => navigate("/admin/created-tickets")}
                     color="purple"
+                />
+
+                <DashboardCard
+                    title="Analytics"
+                    subtext="View analytics"
+                    icon={ChartNoAxesColumn}
+                    onClick={() => navigate("/admin/analytics")}
+                    color="rose"
                 />
 
 

@@ -17,6 +17,7 @@ import AdminViewTickets from "./Pages/AdminViewTickets.jsx";
 import AdminViewUsers from "./Pages/AdminViewUsers.jsx";
 import AdminUserTickets from "./Pages/AdminUserTickets.jsx";
 import AdminCreatedTickets from "./Pages/AdminCreatedTickets.jsx";
+import AdminAnalytics from "./Pages/AdminAnalytics.jsx";
 
 function App() {
 
@@ -141,6 +142,17 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <AdminCreatedTickets/>
+                            </ProtectedRoute>
+                        }
+
+                    />
+
+                    <Route
+
+                        path = "/admin/analytics"
+                        element={
+                            <ProtectedRoute>
+                                <AdminAnalytics />
                             </ProtectedRoute>
                         }
 

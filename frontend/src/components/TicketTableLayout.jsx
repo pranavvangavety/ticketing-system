@@ -11,8 +11,9 @@ import ConfirmModal from "./ConfirmModal.jsx";
 
 
 
-function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = false }) {
-    const [tab, setTab] = useState("open");
+function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = false, defaultTab = "open" }) {
+    const [tab, setTab] = useState(defaultTab === "closed" ? "closed" : "open");
+
     const [pagination, setPagination] = useState({
         open: { page: 0, totalPages: 1, totalCount: 0 },
         closed: { page: 0, totalPages: 1, totalCount: 0 }

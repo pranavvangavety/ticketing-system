@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/users/**").authenticated()
                         .requestMatchers("/admin/login").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+
                         .requestMatchers(HttpMethod.PUT, "/admin/password").hasRole("ADMIN")
 
                         .anyRequest().authenticated() // Everything else needs login

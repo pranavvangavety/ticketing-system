@@ -1,6 +1,7 @@
 package com.ticketingsystem.ticketingsystem.controller;
 
 import com.ticketingsystem.ticketingsystem.dto.*;
+import com.ticketingsystem.ticketingsystem.service.AnalyticsService;
 import com.ticketingsystem.ticketingsystem.service.AuthService;
 import com.ticketingsystem.ticketingsystem.service.TicketService;
 import com.ticketingsystem.ticketingsystem.service.UserService;
@@ -32,6 +33,12 @@ public class AdminController {
     private UserService userService;
 
     private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
+
+    private final AnalyticsService analyticsService;
+
+    public AdminController(AnalyticsService analyticsService) {
+        this.analyticsService = analyticsService;
+    }
 
 
     @PutMapping("/tickets/{id}/close") // Admin closes any ticket manually
@@ -161,6 +168,12 @@ public class AdminController {
 
         return ResponseEntity.ok(new PaginatedResponseDTO<>(ticketPage));
     }
+
+//    @GetMapping("/summary")
+//    public ResponseEntity<AnalyticsSummaryDTO> getAnalyticsSummary() {
+//        AnalyticsSummaryDTO summary = analyticsService.getSummaryStats();
+//        return ResponseEntity.ok(summary);
+//    }
 
 
 }
