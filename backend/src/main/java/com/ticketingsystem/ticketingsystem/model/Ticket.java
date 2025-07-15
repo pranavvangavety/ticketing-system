@@ -31,7 +31,7 @@ public class Ticket {
     @Column(nullable = false)
     private TicketType type;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     @Column
     private RiskLevel risk;
 
