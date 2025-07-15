@@ -1,7 +1,6 @@
 import React, {useEffect} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import successIcon from "../assets/Confirmation.png";
-import axios from "axios";
 
 function TicketConfirmation() {
     const location = useLocation();
@@ -24,10 +23,27 @@ function TicketConfirmation() {
         );
     }
 
-    const [date, time] = createdDateTime.split("T");
+    const dt = new Date(createdDateTime);
+    const formatDayWithSuffix = (day) => {
+        if (day > 3 && day < 21) return `${day}th`;
+        switch (day % 10) {
+            case 1: return `${day}st`;
+            case 2: return `${day}nd`;
+            case 3: return `${day}rd`;
+            default: return `${day}th`;
+        }
+    };
+
+    const day = dt.getDate();
+    const month = dt.toLocaleString('default', { month: 'long' });
+    const year = dt.getFullYear();
+    const date = `${formatDayWithSuffix(day)} ${month}, ${year}`;
+
+    const time = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false});
+
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+        <div className="flex items-center justify-center bg-gray-100 px-4 py-15">
             <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-200 max-w-lg w-full text-center animate-fade-in">
                 <img
                     src={successIcon}

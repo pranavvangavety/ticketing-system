@@ -47,12 +47,21 @@ function CreateTicket() {
 
     const validate = () => {
         const newErrors = {};
-        if (!title.trim()) newErrors.title = "Title is required";
-        if (!description.trim()) newErrors.description = "Description is required";
-        if (!type.trim()) newErrors.type = "Please select a category";
+
+        if (!title.trim()) newErrors.title = "Title is required.";
+
+        if (!description.trim()) {
+            newErrors.description = "Description is required.";
+        } else if (description.trim().length < 10) {
+            newErrors.description = "Description must be at least 10 characters.";
+        }
+
+        if (!type.trim()) newErrors.type = "Please select a category.";
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -91,7 +100,7 @@ function CreateTicket() {
     };
 
     return (
-        <div className=" bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center px-4 py-5">
+        <div className=" bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center px-4">
 
             <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto scroll-container">
 
@@ -107,44 +116,82 @@ function CreateTicket() {
                     </div>
 
                     <div className="relative">
+
                         <input
                             type="text"
                             id="title"
                             value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                if (val.length <= 100) {
+                                    setTitle(val);
+                                }
+                            }}
                             className={`peer w-full px-4 pt-7 pb-2 border rounded-xl focus:outline-none focus:ring-2 ${
                                 errors.title ? 'border-red-500 focus:ring-red-400' : 'border-gray-300 focus:ring-blue-500'
                             }`}
                             placeholder=" "
                         />
+
+
                         <label
                             htmlFor="title"
                             className="absolute left-4 top-2 text-sm text-gray-500 peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 transition-all"
                         >
                             Ticket Title
                         </label>
+                        <div className="text-right text-sm text-gray-400 mt-1">{title.length} / 100</div>
+
                         {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title}</p>}
                     </div>
 
                     <div className="relative">
-                      <textarea
-                          id="description"
-                          value={description}
-                          onChange={(e) => setDescription(e.target.value)}
-                          className={`peer w-full px-4 pt-7 pb-2 border rounded-xl focus:outline-none focus:ring-2 resize-none ${
-                              errors.description ? 'border-red-500 focus:ring-red-400' : 'border-gray-300 focus:ring-blue-500'
-                          }`}
-                          rows="4"
-                          placeholder=" "
-                      />
+                        <textarea
+                            id="description"
+                            value={description}
+
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                if (val.length <= 300) {
+                                    setDescription(val);
+
+                                    if (val.length > 0 && val.length < 10) {
+                                        setErrors((prev) => ({
+                                            ...prev,
+                                            description: "Description must be at least 10 characters.",
+                                        }));
+                                    } else {
+                                        setErrors((prev) => ({ ...prev, description: "" }));
+                                    }
+                                } else {
+                                    setErrors((prev) => ({
+                                        ...prev,
+                                        description: "Description must be 300 characters or less.",
+                                    }));
+                                }
+                            }}
+
+
+                            className={`peer w-full px-4 pt-7 pb-2 border rounded-xl focus:outline-none focus:ring-2 resize-none ${
+                                errors.description ? 'border-red-500 focus:ring-red-400' : 'border-gray-300 focus:ring-blue-500'
+                            }`}
+                            rows="4"
+                            placeholder=" "
+                        />
                         <label
                             htmlFor="description"
                             className="absolute left-4 top-2 text-sm text-gray-500 peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 transition-all"
                         >
                             Description
                         </label>
+
+                        <div className="text-right text-sm text-gray-400 mt-1">
+                            {description.length} / 300
+                        </div>
+
                         {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
                     </div>
+
 
 
                     <div className="relative group">
