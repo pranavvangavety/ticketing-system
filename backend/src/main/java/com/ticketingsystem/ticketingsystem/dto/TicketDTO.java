@@ -3,7 +3,6 @@ package com.ticketingsystem.ticketingsystem.dto;
 import com.ticketingsystem.ticketingsystem.model.TicketType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class TicketDTO {
@@ -12,7 +11,7 @@ public class TicketDTO {
     private String title;
 
     @NotBlank(message = "Description is required")
-    @Size(min = 10, max = 100, message = "Description must be 10-100 characters long")
+    @Size(min = 10, max = 300, message = "Description must be 10-300 characters long")
     private String description;
 
     @NotNull(message = "Type is required")
