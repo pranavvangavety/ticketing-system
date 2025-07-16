@@ -1,7 +1,10 @@
 package com.ticketingsystem.ticketingsystem.controller;
 
 import com.ticketingsystem.ticketingsystem.dto.AnalyticsSummaryDTO;
+import com.ticketingsystem.ticketingsystem.dto.RIskLevelDTO;
+import com.ticketingsystem.ticketingsystem.dto.TicketTypeDTO;
 import com.ticketingsystem.ticketingsystem.dto.TicketsPerDayDTO;
+import com.ticketingsystem.ticketingsystem.model.RiskLevel;
 import com.ticketingsystem.ticketingsystem.service.AnalyticsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +23,7 @@ public class AnalyticsController {
         this.analyticsService = analyticsService;
     }
 
+
     @GetMapping("/summary")
     public ResponseEntity<AnalyticsSummaryDTO> getAnalyticsSummary() {
         System.out.println("== INSIDE ANALYTICS CONTROLLER ==");
@@ -31,9 +35,22 @@ public class AnalyticsController {
         return ResponseEntity.ok(summary);
     }
 
+
     @GetMapping("/tickets-over-time")
     public ResponseEntity<List<TicketsPerDayDTO>> getTicketsOverTime() {
         List<TicketsPerDayDTO> data = analyticsService.getTicketsPerDay();
         return ResponseEntity.ok(data);
+    }
+
+
+    @GetMapping("/type-distribution")
+    public ResponseEntity<TicketTypeDTO> getTicketTypeDistribution() {
+        return ResponseEntity.ok(analyticsService.getTicketTypeDistribution());
+    }
+
+
+    @GetMapping("/risk-distribution")
+    public ResponseEntity<RIskLevelDTO> getRiskLevelDistribution() {
+        return ResponseEntity.ok(analyticsService.getRiskLevelDistribution());
     }
 }

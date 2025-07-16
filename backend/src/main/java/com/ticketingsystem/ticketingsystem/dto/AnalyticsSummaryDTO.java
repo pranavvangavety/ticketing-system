@@ -14,13 +14,16 @@ public class AnalyticsSummaryDTO {
 
     private long onHoldTickets;
 
-    public AnalyticsSummaryDTO(long totalTickets, long openTickets, long closedTickets, long inProgressTickets, long inQueueTickets, long onHoldTickets) {
+    private long pendingTickets;
+
+    public AnalyticsSummaryDTO(long totalTickets, long openTickets, long closedTickets, long inProgressTickets, long inQueueTickets, long onHoldTickets, long pendingTickets) {
         this.totalTickets = totalTickets;
         this.openTickets = openTickets;
         this.closedTickets = closedTickets;
         this.inProgressTickets = inProgressTickets;
         this.inQueueTickets = inQueueTickets;
         this.onHoldTickets = onHoldTickets;
+        this.pendingTickets = pendingTickets;
     }
 
     public long getTotalTickets() {
@@ -69,5 +72,13 @@ public class AnalyticsSummaryDTO {
 
     public void setOnHoldTickets(long onHoldTickets) {
         this.onHoldTickets = onHoldTickets;
+    }
+
+    public long getPendingTickets() {
+        return pendingTickets;
+    }
+
+    public void setPendingTickets(long pendingTickets) {
+        this.pendingTickets = pendingTickets;
     }
 }

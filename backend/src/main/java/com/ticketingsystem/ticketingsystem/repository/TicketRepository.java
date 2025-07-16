@@ -98,6 +98,14 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             TicketStatus status
     );
 
+    long countByType(
+            TicketType type
+    );
+
+    long countByRisk(
+            RiskLevel risk
+    );
+
 
 
 }
