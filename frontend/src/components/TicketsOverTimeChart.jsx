@@ -39,9 +39,9 @@ const TicketsOverTimeChart = () => {
     return (
         <div className="bg-gradient-to-br from-white to-blue-50 p-6 rounded-2xl shadow-md w-full max-w-4xl mx-auto">
 
-            <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-800 mb-4">
-                Tickets Over Time
-            </h2>
+            {/*<h2 className="text-xl sm:text-2xl font-bold text-center text-gray-800 mb-4">*/}
+            {/*    Tickets Over Time*/}
+            {/*</h2>*/}
 
             <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={data}>

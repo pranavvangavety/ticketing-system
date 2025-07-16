@@ -45,9 +45,9 @@ const TicketStatusChart = () => {
 
     return (
         <div className="bg-white p-6 rounded-2xl shadow w-full max-w-3xl mx-auto mt-6">
-            <h2 className="text-xl font-semibold text-gray-800 text-center mb-4">
-                Ticket Status Distribution
-            </h2>
+            {/*<h2 className="text-xl font-semibold text-gray-800 text-center mb-4">*/}
+            {/*    Ticket Status Distribution*/}
+            {/*</h2>*/}
 
             <ResponsiveContainer width="100%" height={320}>
                 <PieChart>
