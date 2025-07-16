@@ -100,7 +100,7 @@ function CreateTicket() {
     };
 
     return (
-        <div className=" bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center px-4">
+        <div className="flex items-center justify-center px-4">
 
             <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto scroll-container">
 

@@ -44,7 +44,7 @@ const AdminAnalytics = () => {
     const cardBase = "cursor-pointer rounded-2xl shadow-md hover:shadow-xl transform hover:scale-[1.03] transition-all duration-300 p-6 flex flex-col items-center justify-center text-center";
 
     return (
-        <div className="fixed inset-0 top-[64px] bg-gradient-to-b from-white via-slate-50 to-indigo-100 overflow-hidden">
+        <div className="fixed inset-0 top-[64px] overflow-hidden">
         <div className="h-full overflow-y-auto scroll-container px-4 py-6">
                 <div className="max-w-7xl mx-auto">
                     <BackButton />

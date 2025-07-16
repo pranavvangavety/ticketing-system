@@ -170,7 +170,7 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
 
 
     return (
-        <div className="fixed inset-0 top-[64px] bg-gradient-to-b from-white via-blue-50 to-purple-50 overflow-hidden">
+        <div className="fixed inset-0 top-[64px] overflow-hidden">
             <div className="h-full overflow-y-auto scroll-container p-6">
                 <div className="max-w-7xl mx-auto">
                     <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">{title}</h2>
