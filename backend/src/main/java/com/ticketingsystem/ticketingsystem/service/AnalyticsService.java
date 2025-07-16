@@ -1,9 +1,6 @@
 package com.ticketingsystem.ticketingsystem.service;
 
-import com.ticketingsystem.ticketingsystem.dto.AnalyticsSummaryDTO;
-import com.ticketingsystem.ticketingsystem.dto.RIskLevelDTO;
-import com.ticketingsystem.ticketingsystem.dto.TicketTypeDTO;
-import com.ticketingsystem.ticketingsystem.dto.TicketsPerDayDTO;
+import com.ticketingsystem.ticketingsystem.dto.*;
 import com.ticketingsystem.ticketingsystem.model.RiskLevel;
 import com.ticketingsystem.ticketingsystem.model.Ticket;
 import com.ticketingsystem.ticketingsystem.model.TicketStatus;
@@ -67,5 +64,19 @@ public class AnalyticsService {
         long high = ticketRepository.countByRisk(RiskLevel.HIGH);
 
         return new RIskLevelDTO(low, medium, high);
+    }
+
+    public AnalyticsExportDTO getExportData() {
+        AnalyticsSummaryDTO summary = getSummaryStats();
+        List<TicketsPerDayDTO> ticketsOverTime = getTicketsPerDay();
+        List<Ticket> allTickets = ticketRepository.findAll();
+
+        Map<String, Long> statusCounts = allTickets.stream().collect(Collectors.groupingBy(t -> t.getStatus().name(), Collectors.counting()));
+
+        Map<String, Long> typeCounts = allTickets.stream().collect(Collectors.groupingBy(t -> t.getType().name(), Collectors.counting()));
+
+        Map<String, Long> riskCounts = allTickets.stream().collect(Collectors.groupingBy(t -> t.getRisk() != null ? t.getRisk().name() : "Pending(not closed)", Collectors.counting()));
+
+        return new AnalyticsExportDTO(summary, ticketsOverTime, statusCounts, typeCounts, riskCounts);
     }
 }

@@ -1,9 +1,6 @@
 package com.ticketingsystem.ticketingsystem.controller;
 
-import com.ticketingsystem.ticketingsystem.dto.AnalyticsSummaryDTO;
-import com.ticketingsystem.ticketingsystem.dto.RIskLevelDTO;
-import com.ticketingsystem.ticketingsystem.dto.TicketTypeDTO;
-import com.ticketingsystem.ticketingsystem.dto.TicketsPerDayDTO;
+import com.ticketingsystem.ticketingsystem.dto.*;
 import com.ticketingsystem.ticketingsystem.model.RiskLevel;
 import com.ticketingsystem.ticketingsystem.service.AnalyticsService;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +8,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.ticketingsystem.ticketingsystem.dto.AnalyticsExportDTO;
+
 
 import java.util.List;
 
@@ -52,5 +51,12 @@ public class AnalyticsController {
     @GetMapping("/risk-distribution")
     public ResponseEntity<RIskLevelDTO> getRiskLevelDistribution() {
         return ResponseEntity.ok(analyticsService.getRiskLevelDistribution());
+    }
+
+
+    @GetMapping("/export")
+    public ResponseEntity<AnalyticsExportDTO> exportAnalyticsData() {
+        AnalyticsExportDTO exportData = analyticsService.getExportData();
+        return ResponseEntity.ok(exportData);
     }
 }
