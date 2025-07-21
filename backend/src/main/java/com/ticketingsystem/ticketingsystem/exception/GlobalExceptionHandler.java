@@ -98,4 +98,15 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(403).body(response);
     }
+
+    @ExceptionHandler(SessionExpiredException.class)
+    public ResponseEntity<ErrorResponse> handleSessionExpired(SessionExpiredException ex) {
+        logger.warn("Session expired: {}", ex.getMessage());
+
+        ErrorResponse response = new ErrorResponse(
+                403, ex.getMessage(), null
+        );
+
+        return ResponseEntity.status(403).body(response);
+    }
 }
