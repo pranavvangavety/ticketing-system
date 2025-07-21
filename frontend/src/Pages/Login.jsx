@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import axios from "axios";
+import axios, {resetSessionAlertFlag} from "../lib/axios.js";
 import {useNavigate} from "react-router-dom";
 import {jwtDecode} from "jwt-decode";
 import ReCAPTCHA from 'react-google-recaptcha';
@@ -71,6 +71,8 @@ function Login() {
             });
         console.log("Username: ", username);
         console.log("Password: ", password);
+
+        resetSessionAlertFlag();
     }
 
 
