@@ -18,6 +18,9 @@ import AdminViewUsers from "./Pages/AdminViewUsers.jsx";
 import AdminUserTickets from "./Pages/AdminUserTickets.jsx";
 import AdminCreatedTickets from "./Pages/AdminCreatedTickets.jsx";
 import AdminAnalytics from "./Pages/AdminAnalytics.jsx";
+import UserAnalytics from "./Pages/UserAnalytics.jsx";
+import SessionExpiredModal from "./components/SessionExpiredModal.jsx";
+
 
 function App() {
 
@@ -153,6 +156,17 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <AdminAnalytics />
+                            </ProtectedRoute>
+                        }
+
+                    />
+
+                    <Route
+
+                        path = "/analytics"
+                        element={
+                            <ProtectedRoute>
+                                <UserAnalytics />
                             </ProtectedRoute>
                         }
 
