@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, FolderOpen, Smile } from "lucide-react";
+import {Plus, FolderOpen, Smile, ChartNoAxesColumn} from "lucide-react";
 import DashboardCard from "../components/DashboardCard.jsx";
 
 function Dashboard() {
@@ -48,6 +48,14 @@ function Dashboard() {
                     icon={FolderOpen}
                     onClick={() => navigate("/view-tickets")}
                     color="indigo"
+                />
+
+                <DashboardCard
+                    title="Analytics"
+                    subtext="View analytics"
+                    icon={ChartNoAxesColumn}
+                    onClick={() => navigate("/analytics")}
+                    color="rose"
                 />
 
 
