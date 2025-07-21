@@ -63,11 +63,6 @@ const AdminAnalytics = () => {
                         </button>
                     </div>
 
-
-
-
-
-
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
                         <div onClick={() => navigate("/admin/tickets")} className={`${cardBase} bg-gradient-to-r from-blue-100 to-blue-50`}>
                             <div className="p-3 rounded-full bg-blue-200 mb-3">
@@ -99,22 +94,22 @@ const AdminAnalytics = () => {
                         <div className="bg-white p-6 rounded-xl shadow">
 
                             <h3 className="text-base font-medium mb-4 text-gray-600 tracking-wide uppercase">Tickets Over Time</h3>
-                            <TicketsOverTimeChart />
+                            <TicketsOverTimeChart endpoint="/admin/analytics/tickets-over-time" />
                         </div>
 
                         <div className="bg-white p-6 rounded-xl shadow">
                             <h3 className="text-base font-medium mb-4 text-gray-600 tracking-wide uppercase">Ticket Status Distribution</h3>
-                            <TicketStatusChart />
+                            <TicketStatusChart endpoint="/admin/analytics/summary "/>
                         </div>
 
                         <div className="bg-white p-6 rounded-xl shadow">
                             <h3 className="text-base font-medium mb-4 text-gray-600 tracking-wide uppercase">Ticket Type Distribution</h3>
-                            <TicketTypeChart />
+                            <TicketTypeChart endpoint="/admin/analytics/type-distribution" />
                         </div>
 
                         <div className="bg-white p-6 rounded-xl shadow">
                             <h3 className="text-base font-medium mb-4 text-gray-600 tracking-wide uppercase">Risk Level Distribution</h3>
-                            <RiskLevelChart />
+                            <RiskLevelChart endpoint="/admin/analytics/risk-distribution" />
                         </div>
                     </div>
                 </div>
