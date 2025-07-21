@@ -19,6 +19,9 @@ public class Auth {
     @Column(nullable = false, length = 10)
     private String role;
 
+    @Column(name = "hashed_token", length=255)
+    private String hashedToken;
+
     //No arg constructor
     public Auth(){
         this.role = "USER";
@@ -53,4 +56,7 @@ public class Auth {
     public void setRole(String role){
         this.role = role;
     }
+
+    public String getHashedToken(){return hashedToken;}
+    public void setHashedToken(String hashedToken){this.hashedToken = hashedToken;}
 }
