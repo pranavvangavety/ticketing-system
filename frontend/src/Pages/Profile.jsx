@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../lib/axios.js";
 import BackButton from "../components/BackButton.jsx";
 import { useNavigate } from "react-router-dom";
 import { User, Lock, Trash2, CheckCircle, XCircle } from "lucide-react";
@@ -95,12 +95,12 @@ function Profile() {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(() => {
-                setToast({ message: "✅ Account deleted", type: "success" });
+                setToast({ message: "Account deleted", type: "success" });
                 localStorage.removeItem("token");
                 setTimeout(() => navigate("/login"), 2000);
             })
             .catch(() => {
-                setToast({ message: "❌ Failed to delete account", type: "error" });
+                setToast({ message: "Failed to delete account", type: "error" });
                 setTimeout(() => setToast({ message: "", type: "" }), 2000);
             });
     };
