@@ -2,9 +2,12 @@ package com.ticketingsystem.ticketingsystem.controller;
 
 
 import com.ticketingsystem.ticketingsystem.dto.*;
+import com.ticketingsystem.ticketingsystem.model.Auth;
+import com.ticketingsystem.ticketingsystem.repository.AuthRepository;
 import com.ticketingsystem.ticketingsystem.security.JwtUtil;
 import com.ticketingsystem.ticketingsystem.service.AuthService;
 import com.ticketingsystem.ticketingsystem.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,8 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil; //Injecting JwtUtil
 
+    @Autowired
+    private AuthRepository authRepository; //Injecting auth repository
 
     @Autowired
     private AuthService authService; //Injecting AuthService
@@ -48,6 +53,31 @@ public class AuthController {
 
         authService.changePassword(username, dto);
         return ResponseEntity.ok("Password changed successfully");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+
+        if(authHeader != null && authHeader.startsWith("Bearer")) {
+            String token = authHeader.substring(7);
+            String username = jwtUtil.extractUsername(token);
+
+            Auth auth = authRepository.findById(username).orElse(null);
+
+            if(auth != null) {
+                auth.setHashedToken(null);
+                authRepository.save(auth);
+            }
+        }
+
+        return ResponseEntity.ok().body("Logged out successfully!");
+    }
+
+
+    @GetMapping("/validate") //endpoint for testing connection, token etc
+    public ResponseEntity<Void> validate() {
+        return ResponseEntity.ok().build();
     }
 
 
