@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { LogOut, User, ChevronDown } from "lucide-react";
+import ConfirmModal from "./ConfirmModal.jsx";
 
 function Navbar() {
     const navigate = useNavigate();
@@ -12,6 +13,7 @@ function Navbar() {
     const buttonRef = useRef(null);
     const [dropdownWidth, setDropdownWidth] = useState(null);
     const [lastLogin, setLastLogin] = useState('');
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
 
 
@@ -113,20 +115,47 @@ function Navbar() {
                             <button
                                 onClick={() => {
                                     setShowDropdown(false);
-                                    localStorage.removeItem("token");
-                                    localStorage.removeItem("username");
-                                    localStorage.removeItem("role");
-                                    window.location.href = "/";
+                                    setShowLogoutConfirm(true);
                                 }}
                                 className="flex items-center gap-2 w-full px-4 py-2 hover:bg-red-50 transition text-left border-t"
                             >
                                 <LogOut className="w-4 h-4 text-red-500" />
                                 <span className="text-red-600">Logout</span>
                             </button>
+
+
+
                         </div>
                     )}
                 </div>
             </div>
+
+            <ConfirmModal
+                visible={showLogoutConfirm}
+                title="Confirm Logout"
+                message="Are you sure you want to log out?"
+                onCancel={() => setShowLogoutConfirm(false)}
+                onConfirm={async () => {
+                    const token = localStorage.getItem("token");
+
+                    try {
+                        if (token) {
+                            await fetch("http://localhost:8080/auth/logout", {
+                                method: "POST",
+                                headers: { Authorization: `Bearer ${token}` },
+                            });
+                        }
+                    } catch (err) {
+                        console.error("Logout failed:", err);
+                    } finally {
+                        localStorage.removeItem("token");
+                        localStorage.removeItem("username");
+                        localStorage.removeItem("role");
+                        window.location.href = "/";
+                    }
+                }}
+            />
+
 
         </header>
     );
