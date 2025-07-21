@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../lib/axios.js";
 
 export function closeTicket(ticketId, fetchURLBase, token, onSuccess, onError) {
     axios
