@@ -1,6 +1,8 @@
 package com.ticketingsystem.ticketingsystem.config;
 
+import com.ticketingsystem.ticketingsystem.repository.AuthRepository;
 import com.ticketingsystem.ticketingsystem.security.JwtAuthenticationFilter;
+import com.ticketingsystem.ticketingsystem.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,27 +21,25 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+//    @Autowired
+//    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
 
         http
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable()) //Disabling CSRF for now
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/register", "/auth/login", "/h2-console/**").permitAll()
-                        .requestMatchers("/tickets/**").authenticated()
-                        .requestMatchers("/users/**").authenticated()
+                        .requestMatchers("/auth/register", "/auth/login", "/auth/validate", "/h2-console/**").permitAll()
                         .requestMatchers("/admin/login").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-
-                        .requestMatchers(HttpMethod.PUT, "/admin/password").hasRole("ADMIN")
-
-                        .anyRequest().authenticated() // Everything else needs login
+                        .requestMatchers("/users/**").authenticated()
+                        .requestMatchers("/tickets/**").authenticated()
+                        .anyRequest().authenticated()
                 )
-                        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
@@ -51,5 +51,11 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter (
+            JwtUtil jwtUtil, AuthRepository authRepository, PasswordEncoder passwordEncoder
+    ) {
+        return new JwtAuthenticationFilter(jwtUtil, authRepository, passwordEncoder);
+    }
 
 }
