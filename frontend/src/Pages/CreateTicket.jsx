@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import axios from "axios";
+import axios from "../lib/axios.js";
 import { useNavigate } from "react-router-dom";
 import BackButton from "../components/BackButton.jsx";
 import { FilePlus2, Loader2 } from "lucide-react";
