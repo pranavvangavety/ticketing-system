@@ -1,7 +1,6 @@
 package com.ticketingsystem.ticketingsystem.controller;
 
 import com.ticketingsystem.ticketingsystem.dto.*;
-import com.ticketingsystem.ticketingsystem.model.RiskLevel;
 import com.ticketingsystem.ticketingsystem.service.AnalyticsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,33 +29,33 @@ public class AnalyticsController {
                 SecurityContextHolder.getContext().getAuthentication().getName());
         System.out.println("Roles: " +
                 SecurityContextHolder.getContext().getAuthentication().getAuthorities());
-        AnalyticsSummaryDTO summary = analyticsService.getSummaryStats();
+        AnalyticsSummaryDTO summary = analyticsService.getSummaryStats(null);
         return ResponseEntity.ok(summary);
     }
 
 
     @GetMapping("/tickets-over-time")
     public ResponseEntity<List<TicketsPerDayDTO>> getTicketsOverTime() {
-        List<TicketsPerDayDTO> data = analyticsService.getTicketsPerDay();
+        List<TicketsPerDayDTO> data = analyticsService.getTicketsPerDay(null);
         return ResponseEntity.ok(data);
     }
 
 
     @GetMapping("/type-distribution")
     public ResponseEntity<TicketTypeDTO> getTicketTypeDistribution() {
-        return ResponseEntity.ok(analyticsService.getTicketTypeDistribution());
+        return ResponseEntity.ok(analyticsService.getTicketTypeDistribution(null));
     }
 
 
     @GetMapping("/risk-distribution")
     public ResponseEntity<RIskLevelDTO> getRiskLevelDistribution() {
-        return ResponseEntity.ok(analyticsService.getRiskLevelDistribution());
+        return ResponseEntity.ok(analyticsService.getRiskLevelDistribution(null));
     }
 
 
     @GetMapping("/export")
     public ResponseEntity<AnalyticsExportDTO> exportAnalyticsData() {
-        AnalyticsExportDTO exportData = analyticsService.getExportData();
+        AnalyticsExportDTO exportData = analyticsService.getExportData(null);
         return ResponseEntity.ok(exportData);
     }
 }
