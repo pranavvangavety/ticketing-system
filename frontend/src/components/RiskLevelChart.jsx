@@ -21,36 +21,36 @@ const labelMap = {
     HIGH: "High"
 };
 
-const RiskLevelChart = () => {
+const RiskLevelChart = ({ endpoint }) => {
     const [data, setData] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
-            const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:8080/admin/analytics/risk-distribution', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            try {
+                const token = localStorage.getItem('token');
+                const res = await axios.get(`http://localhost:8080${endpoint}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
 
-            const chartData = [
-                { name: "LOW", value: res.data.low },
-                { name: "MEDIUM", value: res.data.medium },
-                { name: "HIGH", value: res.data.high }
-            ].filter(d => d.value > 0);
+                const chartData = [
+                    { name: "LOW", value: res.data.low },
+                    { name: "MEDIUM", value: res.data.medium },
+                    { name: "HIGH", value: res.data.high }
+                ].filter(d => d.value > 0);
 
-            setData(chartData);
+                setData(chartData);
+            } catch (err) {
+                console.error("Failed to load risk level chart:", err);
+            }
         };
 
         fetchData();
-    }, []);
+    }, [endpoint]);
 
     if (!data) return null;
 
     return (
         <div className="bg-white p-6 rounded-2xl shadow w-full max-w-3xl mx-auto mt-6">
-            {/*<h2 className="text-xl font-semibold text-gray-800 text-center mb-4">*/}
-            {/*    Risk Level Distribution*/}
-            {/*</h2>*/}
-
             <ResponsiveContainer width="100%" height={320}>
                 <PieChart>
                     <Pie
