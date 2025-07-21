@@ -21,13 +21,13 @@ const labelMap = {
     CHANGE_REQUEST: "Change Request"
 };
 
-const TicketTypeChart = () => {
+const TicketTypeChart = ({ endpoint }) => {
     const [data, setData] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:8080/admin/analytics/type-distribution', {
+            const res = await axios.get(`http://localhost:8080${endpoint}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
@@ -41,16 +41,12 @@ const TicketTypeChart = () => {
         };
 
         fetchData();
-    }, []);
+    }, [endpoint]);
 
     if (!data) return null;
 
     return (
         <div className="bg-white p-6 rounded-2xl shadow w-full max-w-3xl mx-auto mt-6">
-            {/*<h2 className="text-xl font-semibold text-gray-800 text-center mb-4">*/}
-            {/*    Ticket Type Distribution*/}
-            {/*</h2>*/}
-
             <ResponsiveContainer width="100%" height={320}>
                 <PieChart>
                     <Pie
@@ -74,5 +70,6 @@ const TicketTypeChart = () => {
         </div>
     );
 };
+
 
 export default TicketTypeChart;

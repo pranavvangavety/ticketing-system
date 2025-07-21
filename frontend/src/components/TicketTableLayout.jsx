@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../lib/axios.js";
 import Pagination from "./Pagination.jsx";
 import BackButton from "./BackButton.jsx";
 import TicketTable from "./TicketTable.jsx";
@@ -32,7 +32,7 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
     const [confirmModal, setConfirmModal] = useState({
         show: false,
         ticketId: null,
-        action: null, // close or delete
+        action: null,
     });
 
 
@@ -359,10 +359,6 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
                             </div>
                         </div>
                     )}
-
-
-
-
                 </div>
             </div>
         </div>
