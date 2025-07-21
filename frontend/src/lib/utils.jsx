@@ -1,6 +1,6 @@
 import React from "react";
 import { ArrowDownUp, ChevronUp, ChevronDown } from "lucide-react";
-import axios from "axios";
+import axios from "../lib/axios.js";
 
 
 export function renderSortButtons(currentField, currentOrder, isOpenTab, toggleSort) {
@@ -102,9 +102,11 @@ export function downloadCSV(data, filename, fieldMap) {
 }
 
 
-export async function downloadAnalyticsCSV(token) {
+export async function downloadAnalyticsCSV(token, isUser = false) {
     try {
-        const response = await axios.get("http://localhost:8080/admin/analytics/export", {
+        const url = isUser ? "http://localhost:8080/users/analytics/export" : "http://localhost:8080/admin/analytics/export";
+
+        const response = await axios.get(url, {
             headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -112,49 +114,55 @@ export async function downloadAnalyticsCSV(token) {
 
         let csvContent = "";
 
-        // 📊 Summary Section
+
         csvContent += "Summary\n";
         csvContent += `Total Tickets,${data.summary.totalTickets}\n`;
         csvContent += `Pending Tickets,${data.summary.pendingTickets}\n`;
         csvContent += `Closed Tickets,${data.summary.closedTickets}\n`;
-        csvContent += `In Progress Tickets,${data.summary.inProgressTickets}\n`;
-        csvContent += `In Queue Tickets,${data.summary.inQueueTickets}\n`;
-        csvContent += `On Hold Tickets,${data.summary.onHoldTickets}\n\n`;
 
-        // 🕒 Tickets Over Time
+
+        if (!isUser) {
+            csvContent += `In Progress Tickets,${data.summary.inProgressTickets}\n`;
+            csvContent += `In Queue Tickets,${data.summary.inQueueTickets}\n`;
+            csvContent += `On Hold Tickets,${data.summary.onHoldTickets}\n`;
+        }
+
+        csvContent += `\n`;
+
+
         csvContent += "Tickets Over Time\nDate,Count\n";
         data.ticketsOverTime.forEach(row => {
-            const date = new Date(row.date).toLocaleDateString("en-GB"); // 4/7 format
+            const date = new Date(row.date).toLocaleDateString("en-GB");
             csvContent += `${date},${row.count}\n`;
         });
         csvContent += "\n";
 
-        // 📌 Status Counts
+
         csvContent += "Tickets by Status\nStatus,Count\n";
         Object.entries(data.statusCounts).forEach(([status, count]) => {
             csvContent += `${status},${count}\n`;
         });
         csvContent += "\n";
 
-        // 🧾 Type Counts
+
         csvContent += "Tickets by Type\nType,Count\n";
         Object.entries(data.typeCounts).forEach(([type, count]) => {
             csvContent += `${type},${count}\n`;
         });
         csvContent += "\n";
 
-        // 🚨 Risk Level
+
         csvContent += "Tickets by Risk Level\nRisk Level,Count\n";
         Object.entries(data.riskCounts).forEach(([risk, count]) => {
             csvContent += `${risk},${count}\n`;
         });
 
-        // 🎯 Download
+        
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
+        const urlObj = URL.createObjectURL(blob);
 
         const link = document.createElement("a");
-        link.setAttribute("href", url);
+        link.setAttribute("href", urlObj);
         link.setAttribute("download", "analytics_report.csv");
         document.body.appendChild(link);
         link.click();
@@ -177,7 +185,6 @@ export function formatShortDate(dateString) {
         minute: "2-digit",
         hour12: false
     });
-
 }
 
 
