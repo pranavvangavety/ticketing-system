@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import axios from "axios";
+import axios from "../lib/axios.js";
 import BackButton from "../components/BackButton.jsx";
 import UserActionsDropdown from "../components/UserActionsDropdown.jsx";
 import {useNavigate} from "react-router-dom";
@@ -47,13 +47,13 @@ function AdminViewUsers() {
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then(() => {
-                setToast({ message: "✅ User deleted successfully", type: "success" });
+                setToast({ message: "User deleted successfully", type: "success" });
                 setUsers((prev) => prev.filter((u) => u.username !== username));
                 setDeleteUserModal({ show: false, user: null });
             })
             .catch((err) => {
                 console.error("Error deleting user:", err);
-                setToast({ message: "❌ Failed to delete user", type: "error" });
+                setToast({ message: "Failed to delete user", type: "error" });
                 setTimeout(() => setToast({ message: "", type: "" }), 2000);
             });
     }
