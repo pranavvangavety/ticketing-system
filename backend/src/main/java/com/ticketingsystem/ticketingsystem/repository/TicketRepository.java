@@ -94,17 +94,31 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             Pageable pageable
     );
 
-    long countByStatus(
+    long countByCreatedBy_Username(
+            String username
+    );
+
+    long countByCreatedBy_UsernameAndStatus(
+            String username,
             TicketStatus status
     );
 
-    long countByType(
+    long countByCreatedBy_UsernameAndType(
+            String username,
             TicketType type
     );
 
-    long countByRisk(
+    long countByCreatedBy_UsernameAndRisk(
+            String username,
             RiskLevel risk
     );
+
+    long countByType(TicketType type);
+
+    long countByRisk(RiskLevel risk);
+
+    long countByStatus(TicketStatus status);
+
 
 
 
