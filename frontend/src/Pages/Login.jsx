@@ -58,11 +58,14 @@ function Login() {
                 localStorage.setItem("role", role);
                 localStorage.setItem('username', username);
 
-                if (role === "ROLE_ADMIN") {
-                    navigate("/admin");
-                } else {
-                    navigate("/dashboard");
-                }
+                setTimeout(() => {
+                    if (role === "ROLE_ADMIN") {
+                        navigate("/admin");
+                    } else {
+                        navigate("/dashboard");
+                    }
+                }, 500);
+
 
             })
             .catch(error => {

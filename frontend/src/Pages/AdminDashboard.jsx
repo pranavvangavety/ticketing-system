@@ -1,10 +1,12 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Users, FolderOpen , ClipboardList, ChartNoAxesColumn} from "lucide-react";
 import DashboardCard from "../components/DashboardCard.jsx";
 
 function AdminDashboard() {
     const navigate = useNavigate();
+    const [loadingCard, setLoadingCard] = useState(null);
+
 
     useEffect(() => {
         document.body.classList.add('no-scroll');
@@ -24,7 +26,11 @@ function AdminDashboard() {
                     title="Create Ticket"
                     subtext="Create a new ticket"
                     icon={Plus}
-                    onClick={() => navigate("/create-ticket")}
+                    loading={loadingCard === "create"}
+                    onClick={() => {
+                        setLoadingCard("create");
+                        navigate("/create-ticket");
+                    }}
                     color="emerald"
                 />
 
@@ -32,7 +38,12 @@ function AdminDashboard() {
                     title="View Tickets"
                     subtext="Check all submitted tickets"
                     icon={FolderOpen}
-                    onClick={() => navigate("/admin/tickets")}
+                    loading={loadingCard === "tickets"}
+
+                    onClick={() => {
+                        setLoadingCard("tickets");
+                        navigate("/admin/tickets");
+                    }}
                     color="blue"
                 />
 
@@ -40,7 +51,12 @@ function AdminDashboard() {
                     title="View Users"
                     subtext="Manage registered users"
                     icon={Users}
-                    onClick={() => navigate("/admin/users")}
+                    loading={loadingCard === "users"}
+
+                    onClick={() => {
+                        setLoadingCard("users");
+                        navigate("/admin/users");
+                    }}
                     color="yellow"
                 />
 
@@ -48,7 +64,12 @@ function AdminDashboard() {
                     title="View Created Tickets"
                     subtext="Tickets opened by Admin"
                     icon={ClipboardList}
-                    onClick={() => navigate("/admin/created-tickets")}
+                    loading={loadingCard === "admin"}
+
+                    onClick={() => {
+                        setLoadingCard("admin");
+                        navigate("/admin/created-tickets");
+                    }}
                     color="purple"
                 />
 
@@ -56,7 +77,11 @@ function AdminDashboard() {
                     title="Analytics"
                     subtext="View analytics"
                     icon={ChartNoAxesColumn}
-                    onClick={() => navigate("/admin/analytics")}
+                    loading={loadingCard === "analytics"}
+                    onClick={() => {
+                        setLoadingCard("analytics");
+                        navigate("/admin/analytics");
+                    }}
                     color="rose"
                 />
 

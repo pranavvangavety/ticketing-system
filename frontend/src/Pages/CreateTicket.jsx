@@ -79,23 +79,25 @@ function CreateTicket() {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            navigate("/ticket-confirmation", {
-                state: {
-                    ticketId: response.data.id,
-                    title: response.data.title,
-                    type: response.data.type,
-                    createdDateTime: response.data.createdAt,
-                    isAdmin
-                }
-            });
+            setTimeout(() => {
+                navigate("/ticket-confirmation", {
+                    state: {
+                        ticketId: response.data.id,
+                        title: response.data.title,
+                        type: response.data.type,
+                        createdDateTime: response.data.createdAt,
+                        isAdmin
+                    }
+                });
+                setLoading(false);
+            }, 800);
+
 
             localStorage.removeItem("ticketDraft");
 
         } catch (error) {
             console.error("Ticket Creation failed:", error);
             alert(error.response?.data?.message || "Failed to create ticket.");
-        } finally {
-            setLoading(false);
         }
     };
 

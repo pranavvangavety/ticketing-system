@@ -1,6 +1,7 @@
 import React from "react";
+import { Loader2 } from "lucide-react";
 
-function DashboardCard({ title, subtext, icon: Icon, onClick, color }) {
+function DashboardCard({ title, subtext, icon: Icon, onClick, color, loading = false }) {
     const colorMap = {
         teal: {
             bg: "bg-teal-50",
@@ -75,11 +76,18 @@ function DashboardCard({ title, subtext, icon: Icon, onClick, color }) {
     return (
         <button
             onClick={onClick}
-            className={`group animate-pop-in cursor-pointer px-6 py-6 rounded-2xl shadow-md transform transition duration-300 hover:-translate-y-1 flex flex-col items-center text-center space-y-3 ${styles.bg} ${styles.hoverBg} ${styles.text}`}
+            disabled={loading}
+            className={`group animate-pop-in cursor-pointer px-6 py-6 rounded-2xl shadow-md transform transition duration-300 hover:-translate-y-1 flex flex-col items-center text-center space-y-3 
+            ${styles.bg} ${styles.hoverBg} ${styles.text} ${loading ? "opacity-60 cursor-not-allowed" : "cursor-pointer hover: -translate-y-1"}`}
         >
             <div className={`p-3 rounded-full ${styles.iconBg}`}>
-                <Icon className={`w-7 h-7 ${styles.text} group-hover:scale-110 transition-transform duration-200`} />
+                {loading ? (
+                    <Loader2 className="w-7 h-7 animate-spin text-gray-500" />
+                ) : (
+                    <Icon className={`w-7 h-7 ${styles.text} group-hover:scale-110 transition-transform duration-200`} />
+                )}
             </div>
+
             <span className="font-bold text-lg">{title}</span>
             <span className={`text-sm ${styles.subtext}`}>{subtext}</span>
         </button>
