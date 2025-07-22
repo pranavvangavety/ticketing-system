@@ -61,7 +61,10 @@ const UserAnalytics = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                        <div className={`${cardBase} bg-gradient-to-r from-blue-100 to-blue-50`}>
+                        <div
+                            className={`${cardBase} bg-gradient-to-r from-yellow-100 to-green-50`}
+                            onClick={() => navigate("/view-tickets", { state: { defaultTab: "open" } })}
+                        >
                             <div className="p-3 rounded-full bg-blue-200 mb-3">
                                 <FolderOpen className="text-blue-700 w-6 h-6" />
                             </div>
@@ -69,7 +72,11 @@ const UserAnalytics = () => {
                             <p className="text-3xl font-bold text-blue-700 mt-1">{summary.totalTickets}</p>
                         </div>
 
-                        <div className={`${cardBase} bg-gradient-to-r from-yellow-100 to-green-50`}>
+                        <div
+                            className={`${cardBase} bg-gradient-to-r from-yellow-100 to-green-50`}
+                            onClick={() => navigate("/view-tickets", { state: { defaultTab: "open" } })}
+                        >
+
                             <div className="p-3 rounded-full bg-yellow-200 mb-3">
                                 <HelpCircle className="text-yellow-700 w-6 h-6" />
                             </div>
@@ -77,7 +84,10 @@ const UserAnalytics = () => {
                             <p className="text-3xl font-bold text-yellow-700 mt-1">{summary.pendingTickets}</p>
                         </div>
 
-                        <div className={`${cardBase} bg-gradient-to-r from-red-100 to-red-50`}>
+                        <div
+                            className={`${cardBase} bg-gradient-to-r from-red-100 to-red-50`}
+                            onClick={() => navigate("/view-tickets", { state: { defaultTab: "closed" } })}
+                        >
                             <div className="p-3 rounded-full bg-red-200 mb-3">
                                 <CheckCircle2 className="text-red-700 w-6 h-6" />
                             </div>

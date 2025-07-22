@@ -5,6 +5,7 @@ import BackButton from "./BackButton.jsx";
 import TicketTable from "./TicketTable.jsx";
 import { closeTicket, deleteTicket } from "../lib/ticketActions.jsx";
 import ConfirmModal from "./ConfirmModal.jsx";
+import { useLocation } from "react-router-dom";
 
 
 
@@ -12,7 +13,12 @@ import ConfirmModal from "./ConfirmModal.jsx";
 
 
 function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = false, defaultTab = "open" }) {
-    const [tab, setTab] = useState(defaultTab === "closed" ? "closed" : "open");
+
+    const location = useLocation();
+    const defaultTabFromNav = location.state?.defaultTab;
+
+
+    const [tab, setTab] = useState(defaultTabFromNav === "closed" ? "closed" : "open");
 
     const [pagination, setPagination] = useState({
         open: { page: 0, totalPages: 1, totalCount: 0 },
