@@ -10,10 +10,19 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
+import java.util.Base64;
+import java.util.Optional;
 
 
 @RestController
@@ -27,10 +36,11 @@ public class TicketController {
     private UserRepository userRepository;
 
     // User creates new Ticket
-    @PostMapping //(/tickets) //comment
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE) //(/tickets) //comment
     public ResponseEntity<ViewTicketDTO> createTicket(
             Principal principal,
-            @RequestBody @Valid TicketDTO ticketDTO
+            @RequestPart("ticket") @Valid TicketDTO ticketDTO,
+            @RequestPart(value = "attachment", required = false)MultipartFile file
             ) {
 
         String username = principal.getName();
@@ -38,21 +48,25 @@ public class TicketController {
         User user = userRepository.findById(username)
                 .orElseThrow(() -> new UnauthorizedActionException("User not found"));
 
+        try {
+            Ticket saved = ticketService.createTicket(user, ticketDTO, file);
 
-        Ticket saved = ticketService.createTicket(user, ticketDTO);
+            ViewTicketDTO dto = new ViewTicketDTO(
+                    saved.getId(),
+                    saved.getCreatedBy().getUsername(),
+                    saved.getType(),
+                    saved.getTitle(),
+                    saved.getDescription(),
+                    saved.getCreatedAt(),
+                    saved.getLastupdated(),
+                    saved.getStatus(),
+                    saved.getAttachmentName()
+            );
 
-        ViewTicketDTO dto = new ViewTicketDTO(
-                saved.getId(),
-                saved.getCreatedBy().getUsername(),
-                saved.getType(),
-                saved.getTitle(),
-                saved.getDescription(),
-                saved.getCreatedAt(),
-                saved.getLastupdated(),
-                saved.getStatus()
-        );
-
-        return ResponseEntity.ok(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+        } catch (IOException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
 
     }
 
@@ -112,6 +126,43 @@ public class TicketController {
         );
 
         return ResponseEntity.ok(new PaginatedResponseDTO<>(closedTickets));
+    }
+
+    @GetMapping("/{id}/attachment")
+    public ResponseEntity<byte[]> downloadAttachment(
+            @PathVariable Long id
+    ) {
+        Optional<Ticket> optionalTicket = ticketService.findById(id);
+
+
+        if(optionalTicket.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Ticket ticket = optionalTicket.get();
+
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        boolean isAdmin = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getAuthorities()
+                .stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!ticket.getCreatedBy().getUsername().equals(currentUsername) && !isAdmin) {
+            throw new AccessDeniedException("Not authorized to download this file.");
+        }
+
+
+        if(ticket.getAttachmentData() == null) {
+            return ResponseEntity.noContent().build();
+        }
+
+        byte[] fileData = Base64.getDecoder().decode(ticket.getAttachmentData());
+
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + ticket.getAttachmentName() + "\"")
+                .contentType(MediaType.parseMediaType(ticket.getAttachmentType()))
+                .body(fileData);
     }
 
 }

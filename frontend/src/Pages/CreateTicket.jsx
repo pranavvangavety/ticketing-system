@@ -13,6 +13,14 @@ function CreateTicket() {
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
     const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
+    const [file, setFile] = useState(null);
+
+    const MAX_FILE_SIZE_MB = 2;
+    const ALLOWED_TYPES = ["application/pdf", "image/jpeg"];
+    const FILENAME_REGEX = /^[a-zA-Z0-9_.-]+$/;
+
+    const isFileValid = !errors.file && (file || file === null);
+
 
 
     useEffect(() => {
@@ -73,11 +81,23 @@ function CreateTicket() {
         const isAdmin = role === "ROLE_ADMIN";
 
         try {
-            const response = await axios.post(
-                'http://localhost:8080/tickets',
-                { title, description, type },
-                { headers: { Authorization: `Bearer ${token}` } }
+            const formData = new FormData();
+            const ticketBlob = new Blob(
+                [JSON.stringify({ title, description, type })],
+                { type: "application/json" }
             );
+            formData.append("ticket", ticketBlob);
+
+            if (file) {
+                formData.append("attachment", file);
+            }
+
+            const response = await axios.post('http://localhost:8080/tickets', formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data"
+                }
+            });
 
             setTimeout(() => {
                 navigate("/ticket-confirmation", {
@@ -100,6 +120,36 @@ function CreateTicket() {
             alert(error.response?.data?.message || "Failed to create ticket.");
         }
     };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+
+        if (!file) {
+            setFile(null);
+            setErrors((prev) => ({ ...prev, file: null }));
+            return;
+        }
+
+        const isValidType = ALLOWED_TYPES.includes(file.type);
+        const isValidSize = file.size <= MAX_FILE_SIZE_MB * 1024 * 1024;
+        const isValidName = FILENAME_REGEX.test(file.name);
+
+        if (!isValidType || !isValidSize || !isValidName) {
+            let errorMsg = "";
+            if (!isValidType) errorMsg = "Only PDF or JPG files are allowed.";
+            else if (!isValidSize) errorMsg = "File size must be under 2MB.";
+            else errorMsg = "Invalid file name. Use only A-Z, a-z, 0-9, -, _, .";
+
+            setErrors((prev) => ({ ...prev, file: errorMsg }));
+            setFile(null);
+            e.target.value = "";
+            return;
+        }
+
+        setFile(file);
+        setErrors((prev) => ({ ...prev, file: null }));
+    };
+
 
     return (
         <div className="flex items-center justify-center px-4">
@@ -230,11 +280,46 @@ function CreateTicket() {
                         )}
                     </div>
 
+                    <div className="text-sm text-gray-500 mb-2">
+                        📎 Attachments must be:
+                        <ul className="list-disc list-inside ml-2">
+                            <li>PDF or JPG format only</li>
+                            <li>Less than 2 MB in size</li>
+                            <li>Alphanumeric filenames only (A-Z, a-z, 0-9, `-`, `_`, `.`). No spaces allowed.</li>
+                        </ul>
+                    </div>
+
+
+                    <div className="relative">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Attachment (optional)
+                        </label>
+
+                        <input
+                            type="file"
+                            onChange={handleFileChange}
+                            className={`block w-full text-sm border rounded-xl shadow-sm p-2
+                            file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold
+                          file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
+                           ${errors.file ? 'border-red-500 text-red-500' : 'border-gray-300 text-gray-700'}
+    `}
+                        />
+
+                        {file && (
+                            <p className="text-sm text-gray-500 mt-1">Selected file: {file.name}</p>
+                        )}
+
+                        {errors.file && (
+                            <p className="text-red-500 text-sm mt-1">{errors.file}</p>
+                        )}
+
+                    </div>
+
 
                     <div>
                         <button
                             type="submit"
-                            disabled={loading}
+                            disabled={loading || !isFileValid}
                             className={`w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-xl font-semibold transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                                 loading ? 'opacity-60 cursor-not-allowed' : ''
                             }`}

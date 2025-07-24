@@ -50,6 +50,15 @@ public class Ticket {
     @Column(name = "last_updated")
     private LocalDateTime lastupdated;
 
+    @Column(name = "attachment_data", columnDefinition = "TEXT")
+    private String attachmentData;
+
+    @Column(name = "attachment_name")
+    private String attachmentName;
+
+    @Column(name = "attachment_type")
+    private String attachmentType;
+
     public Ticket() {
 
     }
@@ -142,5 +151,18 @@ public class Ticket {
     public void setLastupdated(LocalDateTime lastupdated) {
         this.lastupdated = lastupdated;
     }
+
+    public String getAttachmentData() {return attachmentData;}
+
+    public void setAttachmentData(String attachmentData) {this.attachmentData = attachmentData;}
+
+    public String getAttachmentName() {return attachmentName;}
+
+    public void setAttachmentName(String attachmentName) {this.attachmentName = attachmentName;}
+
+    public String getAttachmentType() {return attachmentType;}
+
+    public void setAttachmentType(String attachmentType) {this.attachmentType = attachmentType;}
+
 
 }

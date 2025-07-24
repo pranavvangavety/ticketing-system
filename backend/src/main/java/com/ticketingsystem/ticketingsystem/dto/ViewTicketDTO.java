@@ -19,10 +19,11 @@ public class ViewTicketDTO {
     private LocalDateTime lastUpdated;
     private TicketStatus status;
     private RiskLevel riskLevel;
+    private String attachmentName;
 
 
     public ViewTicketDTO(long id, String createdBy, TicketType type, String title, String description,
-                         LocalDateTime createdAt, LocalDateTime lastUpdated, TicketStatus status) {
+                         LocalDateTime createdAt, LocalDateTime lastUpdated, TicketStatus status, String attachmentName) {
         this.id = id;
         this.createdBy = createdBy;
         this.type = type;
@@ -31,12 +32,13 @@ public class ViewTicketDTO {
         this.createdAt = createdAt;
         this.lastUpdated = lastUpdated;
         this.status = status;
+        this.attachmentName = attachmentName;
     }
 
 
     public ViewTicketDTO(long id, String createdBy, TicketType type, String title, String description,
                          LocalDateTime createdAt, LocalDateTime closedOn, LocalDateTime lastUpdated,
-                         TicketStatus status, RiskLevel riskLevel) {
+                         TicketStatus status, RiskLevel riskLevel, String attachmentName) {
         this.id = id;
         this.createdBy = createdBy;
         this.type = type;
@@ -47,6 +49,8 @@ public class ViewTicketDTO {
         this.lastUpdated = lastUpdated;
         this.status = status;
         this.riskLevel = riskLevel;
+        this.attachmentName = attachmentName;
+
     }
 
 
@@ -130,6 +134,14 @@ public class ViewTicketDTO {
 
     public void setRiskLevel(RiskLevel riskLevel) {
         this.riskLevel = riskLevel;
+    }
+
+    public String getAttachmentName() {
+        return attachmentName;
+    }
+
+    public void setAttachmentName(String attachmentName) {
+        this.attachmentName = attachmentName;
     }
 }
 

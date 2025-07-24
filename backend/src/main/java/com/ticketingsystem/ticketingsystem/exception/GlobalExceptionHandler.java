@@ -3,11 +3,13 @@ package com.ticketingsystem.ticketingsystem.exception;
 import com.ticketingsystem.ticketingsystem.dto.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -109,4 +111,17 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(403).body(response);
     }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxSizeException(MaxUploadSizeExceededException ex) {
+        logger.warn("File is too large: {}", ex.getMessage());
+
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.PAYLOAD_TOO_LARGE.value(),
+                "File too large. Maximum allowed file size is 5MB",
+                null
+        );
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(response);
+    }
+
 }
