@@ -192,8 +192,16 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
         <div className="fixed inset-0 top-[64px] overflow-hidden">
             <div className="h-full overflow-y-auto scroll-container p-6">
                 <div className="max-w-7xl mx-auto">
-                    <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">{title}</h2>
-                    <BackButton />
+                    <div className="relative flex items-center h-[48px] mb-6">
+                        <div className="mt-20 z-10">
+                            <BackButton />
+                        </div>
+                        <h2 className="absolute left-1/2 -translate-x-1/2 text-3xl font-bold text-gray-800">
+                            {title}
+                        </h2>
+                    </div>
+
+
 
                     <div className="flex justify-center gap-4 my-6">
                         {["open", "closed"].map((type) => (

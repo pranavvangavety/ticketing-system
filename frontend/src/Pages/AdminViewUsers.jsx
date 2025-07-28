@@ -95,11 +95,17 @@ function AdminViewUsers() {
                     </div>
                 </div>
             )}
+            <div className="relative flex items-center h-[48px] mb-6">
+                <div className="mt-5 z-10">
+                    <BackButton />
+                </div>
+                <h2 className="absolute left-1/2 -translate-x-1/2 text-3xl font-bold text-gray-800">
+                    All Users
+                </h2>
+            </div>
 
 
-            <h2 className="text-2xl font-bold mb-4 text-center">All Users</h2>
 
-            <BackButton/>
 
             <div className="relative overflow-x-visible shadow rounded">
                 <table className="min-w-full text-sm text-left text-gray-700">
