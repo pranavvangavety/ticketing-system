@@ -1,6 +1,8 @@
 package com.ticketingsystem.ticketingsystem.controller;
 
 import com.ticketingsystem.ticketingsystem.dto.*;
+import com.ticketingsystem.ticketingsystem.model.TicketStatus;
+import com.ticketingsystem.ticketingsystem.model.TicketType;
 import com.ticketingsystem.ticketingsystem.service.AnalyticsService;
 import com.ticketingsystem.ticketingsystem.service.AuthService;
 import com.ticketingsystem.ticketingsystem.service.TicketService;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
@@ -89,10 +93,11 @@ public class AdminController {
     @GetMapping("/tickets/{username}/open") // Admin can see user specific open tickets
     public ResponseEntity<PaginatedResponseDTO<ViewTicketDTO>> viewUserOpenTickets(
             @PathVariable String username,
-            @RequestParam(required = false) String type,
+            @RequestParam(required = false) List<TicketStatus> status,
+            @RequestParam(required = false) List<TicketType> type,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<ViewTicketDTO> tickets = ticketService.viewOpenTickets(username, type , pageable);
+        Page<ViewTicketDTO> tickets = ticketService.viewOpenTickets(username, status, type , pageable);
         return ResponseEntity.ok(new PaginatedResponseDTO<>(tickets));
     }
 
@@ -104,7 +109,7 @@ public class AdminController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortField,
             @RequestParam(defaultValue = "desc") String sortOrder,
-            @RequestParam(required = false) String type,
+            @RequestParam(required = false) List<TicketType> type,
             @RequestParam(required = false) String risk
     ) {
         Page<ViewTicketDTO> tickets = ticketService.viewClosedTickets(
@@ -123,11 +128,12 @@ public class AdminController {
 
     @GetMapping("/tickets/open") // Admin can see all open tickets
     public ResponseEntity<PaginatedResponseDTO<ViewTicketDTO>> viewAllOpenTickets (
-            @RequestParam(required = false) String type,
+            @RequestParam(required = false) List<TicketStatus> status,
+            @RequestParam(required = false) List<TicketType> type,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)Pageable pageable)
     {
 
-        Page<ViewTicketDTO> dtoPage = ticketService.viewAllOpenTickets(type, pageable);
+        Page<ViewTicketDTO> dtoPage = ticketService.viewAllOpenTickets(status, type, pageable);
         return ResponseEntity.ok(new PaginatedResponseDTO<>(dtoPage));
     }
 
@@ -138,7 +144,7 @@ public class AdminController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortField,
             @RequestParam(defaultValue = "desc") String sortOrder,
-            @RequestParam(required = false) String type,
+            @RequestParam(required = false) List<TicketType> type,
             @RequestParam(required = false) String risk
     ) {
         Sort sort = Sort.by(Sort.Direction.fromString(sortOrder), sortField);
@@ -155,16 +161,20 @@ public class AdminController {
 
     @GetMapping("/tickets/by-admin/open")
     public ResponseEntity<PaginatedResponseDTO<ViewTicketDTO>> viewAdminOpenTickets(
+            @RequestParam(required = false) List<TicketStatus> status,
+            @RequestParam(required = false) List<TicketType> type,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<ViewTicketDTO> ticketPage = ticketService.getAdminOpenTickets(pageable);
+
+        Page<ViewTicketDTO> ticketPage = ticketService.getAdminOpenTickets(status, type, pageable);
 
         return ResponseEntity.ok(new PaginatedResponseDTO<>(ticketPage));
     }
 
     @GetMapping("/tickets/by-admin/closed")
     public ResponseEntity<PaginatedResponseDTO<ViewTicketDTO>> viewAdminClosedTickets(
+            @RequestParam(required = false) List<TicketType> type,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<ViewTicketDTO> ticketPage = ticketService.getAdminClosedTickets(pageable);
+        Page<ViewTicketDTO> ticketPage = ticketService.getAdminClosedTickets(type, pageable);
 
         return ResponseEntity.ok(new PaginatedResponseDTO<>(ticketPage));
     }

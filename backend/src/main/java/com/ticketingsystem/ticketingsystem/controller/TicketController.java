@@ -3,6 +3,8 @@ package com.ticketingsystem.ticketingsystem.controller;
 import com.ticketingsystem.ticketingsystem.dto.*;
 import com.ticketingsystem.ticketingsystem.exception.UnauthorizedActionException;
 import com.ticketingsystem.ticketingsystem.model.Ticket;
+import com.ticketingsystem.ticketingsystem.model.TicketStatus;
+import com.ticketingsystem.ticketingsystem.model.TicketType;
 import com.ticketingsystem.ticketingsystem.model.User;
 import com.ticketingsystem.ticketingsystem.repository.UserRepository;
 import com.ticketingsystem.ticketingsystem.service.TicketService;
@@ -22,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -99,9 +102,10 @@ public class TicketController {
     public ResponseEntity<PaginatedResponseDTO<ViewTicketDTO>> viewOpenTickets(
             Pageable pageable,
             Principal principal,
-            @RequestParam(required = false) String type) {
+            @RequestParam(required = false) List<TicketStatus> status,
+            @RequestParam(required = false) List<TicketType> type) {
 
-        Page<ViewTicketDTO> openTickets = ticketService.viewOpenTickets(principal.getName(), type , pageable);
+        Page<ViewTicketDTO> openTickets = ticketService.viewOpenTickets(principal.getName(), status, type , pageable);
         return ResponseEntity.ok(new PaginatedResponseDTO<>(openTickets));
     }
 
@@ -112,7 +116,7 @@ public class TicketController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortField,
             @RequestParam(defaultValue = "desc") String sortOrder,
-            @RequestParam(required = false) String type,
+            @RequestParam(required = false) List<TicketType> type,
             @RequestParam(required = false) String risk
     ) {
         Page<ViewTicketDTO> closedTickets = ticketService.viewClosedTickets(

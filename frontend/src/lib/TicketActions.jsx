@@ -1,8 +1,12 @@
 import axios from "../lib/axios.js";
 
-export function closeTicket(ticketId, fetchURLBase, token, onSuccess, onError) {
+export function closeTicket(ticketId, fetchURLBase, token, role, onSuccess, onError) {
+    const url = role === 'admin'
+        ? `/admin/tickets/${ticketId}/close`
+        : `${fetchURLBase}/${ticketId}/close`;
+
     axios
-        .put(`${fetchURLBase}/${ticketId}/close`, {}, {
+        .put(url, {}, {
             headers: { Authorization: `Bearer ${token}` }
         })
         .then(() => {

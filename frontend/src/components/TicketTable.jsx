@@ -1,19 +1,26 @@
-import React from "react";
+import React, {useState} from "react";
 import TypeBadge from "./TypeBadge.jsx";
 import StatusBadge from "./StatusBadge.jsx";
 import RiskLevelBadge from "./RiskLevel.jsx";
 import { formatShortDate, sortTickets, renderSortButtons, downloadCSV } from "../lib/utils.jsx";
 import {Download, XCircle} from "lucide-react";
 import DownloadButton from "./DownloadFileButton.jsx";
+import MultiSelectDropdown from "./MultiSelectDropdown.jsx";
 
 
 
+function TicketTable({ tickets, isOpenTab, showEdit, showRisk, onCloseTicket, onDeleteTicket, sortField, sortOrder, toggleSort, onEditTicket, filterStatus, setFilterStatus, filterType, setFilterType}) {
 
-function TicketTable({ tickets, isOpenTab, showEdit, showRisk, onCloseTicket, onDeleteTicket, sortField, sortOrder, toggleSort, onEditTicket }) {
-
-    const sortedTickets = Array.isArray(tickets)
-        ? (sortField ? sortTickets(tickets, sortField, sortOrder) : tickets)
+    const filteredTickets = Array.isArray(tickets)
+        ? tickets.filter(ticket => {
+            const typeMatch = filterType.length === 0 || filterType.includes(ticket.type);
+            const statusMatch = filterStatus.length === 0 || filterStatus.includes(ticket.status);
+            return typeMatch && statusMatch;
+        })
         : [];
+
+    const sortedTickets = sortField ? sortTickets(filteredTickets, sortField, sortOrder) : filteredTickets;
+
 
 
     const fieldMap = {
@@ -35,6 +42,7 @@ function TicketTable({ tickets, isOpenTab, showEdit, showRisk, onCloseTicket, on
         (showEdit ? 1 : 0);      // Edit
 
 
+
     return (
 
         <div className="overflow-x-auto rounded-xl shadow bg-white">
@@ -46,6 +54,25 @@ function TicketTable({ tickets, isOpenTab, showEdit, showRisk, onCloseTicket, on
 
                 <div className="flex flex-wrap items-center gap-3 justify-end">
                     {renderSortButtons(sortField, sortOrder, isOpenTab, toggleSort)}
+
+                    <MultiSelectDropdown
+                        label="Types"
+                        options={["ISSUE", "SUPPORT", "CHANGE_REQUEST"]}
+                        selected={filterType}
+                        onChange={setFilterType}
+                    />
+
+
+                    {isOpenTab && (
+                        <MultiSelectDropdown
+                            label="Status"
+                            options={["OPEN", "IN_PROGRESS", "ON_HOLD", "IN_QUEUE"]}
+                            selected={filterStatus}
+                            onChange={setFilterStatus}
+                        />
+
+                    )}
+
 
                     <button
                         onClick={() =>

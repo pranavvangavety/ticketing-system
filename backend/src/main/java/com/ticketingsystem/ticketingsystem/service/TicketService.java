@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -257,22 +259,33 @@ public class TicketService {
     // Admin can see user specific open tickets
     // User views open tickets
     @Transactional
-    public Page<ViewTicketDTO> viewOpenTickets(String username, String type, Pageable pageable) {
-
+    public Page<ViewTicketDTO> viewOpenTickets(String username, List<TicketStatus> statusList, List<TicketType> typeList, Pageable pageable) {
         Page<Ticket> page;
 
         logger.info("Open tickets of {} viewed", username);
 
-
-        if(type != null) {
-            logger.info("Filter added: {}", type);
-            page = ticketRepository.findByCreatedBy_UsernameAndStatusNotAndType(
+        if (statusList != null && !statusList.isEmpty() && typeList != null && !typeList.isEmpty()) {
+            page = ticketRepository.findByCreatedBy_UsernameAndStatusInAndTypeInAndStatusNot(
                     username,
+                    statusList,
+                    typeList,
                     TicketStatus.CLOSED,
-                    TicketType.valueOf(type),
                     pageable
             );
-
+        } else if (statusList != null && !statusList.isEmpty()) {
+            page = ticketRepository.findByCreatedBy_UsernameAndStatusInAndStatusNot(
+                    username,
+                    statusList,
+                    TicketStatus.CLOSED,
+                    pageable
+            );
+        } else if (typeList != null && !typeList.isEmpty()) {
+            page = ticketRepository.findByCreatedBy_UsernameAndTypeInAndStatusNot(
+                    username,
+                    typeList,
+                    TicketStatus.CLOSED,
+                    pageable
+            );
         } else {
             page = ticketRepository.findByCreatedBy_UsernameAndStatusNot(
                     username,
@@ -280,6 +293,7 @@ public class TicketService {
                     pageable
             );
         }
+
         return page.map(ticket -> new ViewTicketDTO(
                 ticket.getId(),
                 ticket.getCreatedBy().getUsername(),
@@ -294,10 +308,19 @@ public class TicketService {
     }
 
 
+
     // User views closed tickets
-    // Admin can see user specific closed tickets,
+    // Admin can see user-specific closed tickets,
     @Transactional
-    public Page<ViewTicketDTO> viewClosedTickets(String username, String type, String risk, String sortField, String sortOrder, int page, int size) {
+    public Page<ViewTicketDTO> viewClosedTickets(
+            String username,
+            List<TicketType> type,
+            String risk,
+            String sortField,
+            String sortOrder,
+            int page,
+            int size
+    ) {
         Page<Ticket> pageResult;
 
         logger.info("Closed tickets of {} viewed", username);
@@ -305,21 +328,21 @@ public class TicketService {
         Sort sort = Sort.by(Sort.Direction.fromString(sortOrder), sortField);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        if (type != null && risk != null) {
+        if (type != null && !type.isEmpty() && risk != null) {
             logger.info("Filters added: {}, {}", type, risk);
-            pageResult = ticketRepository.findByCreatedBy_UsernameAndStatusAndTypeAndRisk(
+            pageResult = ticketRepository.findByCreatedBy_UsernameAndStatusAndTypeInAndRisk(
                     username,
                     TicketStatus.CLOSED,
-                    TicketType.valueOf(type),
+                    type,
                     RiskLevel.valueOf(risk),
                     pageable
             );
-        } else if (type != null) {
+        } else if (type != null && !type.isEmpty()) {
             logger.info("Filter added: {}", type);
-            pageResult = ticketRepository.findByCreatedBy_UsernameAndStatusAndType(
+            pageResult = ticketRepository.findByCreatedBy_UsernameAndStatusAndTypeIn(
                     username,
                     TicketStatus.CLOSED,
-                    TicketType.valueOf(type),
+                    type,
                     pageable
             );
         } else if (risk != null) {
@@ -350,29 +373,41 @@ public class TicketService {
                 ticket.getStatus(),
                 ticket.getRisk(),
                 ticket.getAttachmentName()
-
         ));
     }
 
 
+
     // Admin can see all open tickets
     @Transactional
-    public Page<ViewTicketDTO> viewAllOpenTickets(String type, Pageable pageable){
+    public Page<ViewTicketDTO> viewAllOpenTickets(List<TicketStatus> statusList, List<TicketType> typeList, Pageable pageable){
         Page<Ticket> page;
-        logger.info("Open tickets viewed by Admin");
 
-        if(type != null){
-            logger.info("Filter added: {}", type);
-            page = ticketRepository.findByStatusNotAndType(
-                    TicketStatus.OPEN,
-                    TicketType.valueOf(type),
+        logger.info("Admin viewing open tickets");
+
+        if (statusList != null && !statusList.isEmpty() && typeList != null && !typeList.isEmpty()) {
+            page = ticketRepository.findByStatusInAndTypeInAndStatusNot(
+                    statusList,
+                    typeList,
+                    TicketStatus.CLOSED,
                     pageable
             );
-
-        } else{
-            page =  ticketRepository.findByStatusNot(TicketStatus.CLOSED, pageable);
-
+        } else if (statusList != null && !statusList.isEmpty()) {
+            page = ticketRepository.findByStatusInAndStatusNot(
+                    statusList,
+                    TicketStatus.CLOSED,
+                    pageable
+            );
+        } else if (typeList != null && !typeList.isEmpty()) {
+            page = ticketRepository.findByTypeInAndStatusNot(
+                    typeList,
+                    TicketStatus.CLOSED,
+                    pageable
+            );
+        } else {
+            page = ticketRepository.findByStatusNot(TicketStatus.CLOSED, pageable);
         }
+
 
         return page.map(ticket -> new ViewTicketDTO(
                 ticket.getId(),
@@ -393,27 +428,24 @@ public class TicketService {
 
     // Admin can see all closed tickets
     @Transactional
-
-    public Page<ViewTicketDTO> getAllClosedTickets(String type, String risk, Pageable pageable){
+    public Page<ViewTicketDTO> getAllClosedTickets(List<TicketType> type, String risk, Pageable pageable) {
 
         Page<Ticket> page;
         logger.info("Closed tickets viewed by Admin");
 
-
-        if(type != null && risk != null){
+        if (type != null && !type.isEmpty() && risk != null) {
             logger.info("Filters added: {}, {}", type, risk);
-
-            page = ticketRepository.findByStatusAndTypeAndRisk(
+            page = ticketRepository.findByStatusAndTypeInAndRisk(
                     TicketStatus.CLOSED,
-                    TicketType.valueOf(type),
+                    type,
                     RiskLevel.valueOf(risk),
                     pageable
             );
-        } else if (type != null) {
+        } else if (type != null && !type.isEmpty()) {
             logger.info("Filter added: {}", type);
-            page = ticketRepository.findByStatusNotAndType(
-                    TicketStatus.OPEN,
-                    TicketType.valueOf(type),
+            page = ticketRepository.findByStatusAndTypeIn(
+                    TicketStatus.CLOSED,
+                    type,
                     pageable
             );
         } else if (risk != null) {
@@ -423,8 +455,7 @@ public class TicketService {
                     RiskLevel.valueOf(risk),
                     pageable
             );
-
-        }else{
+        } else {
             page = ticketRepository.findByStatus(TicketStatus.CLOSED, pageable);
         }
 
@@ -442,17 +473,47 @@ public class TicketService {
                 ticket.getStatus(),
                 ticket.getRisk(),
                 ticket.getAttachmentName()
-
         ));
-    };
+    }
+
+
 
     // Admin can see admin created open tickets
     @Transactional
-
-    public Page<ViewTicketDTO> getAdminOpenTickets(Pageable pageable) {
+    public Page<ViewTicketDTO> getAdminOpenTickets(List<TicketStatus> statusList, List<TicketType> typeList, Pageable pageable) {
         logger.info("Admin created open tickets viewed");
 
-        Page<Ticket> page = ticketRepository.findByCreatedBy_UsernameAndStatusNot("admin", TicketStatus.CLOSED, pageable);
+        Page<Ticket> page;
+
+        if (statusList != null && !statusList.isEmpty() && typeList != null && !typeList.isEmpty()) {
+            page = ticketRepository.findByCreatedBy_UsernameAndStatusInAndTypeInAndStatusNot(
+                    "admin",
+                    statusList,
+                    typeList,
+                    TicketStatus.CLOSED,
+                    pageable
+            );
+        } else if (statusList != null && !statusList.isEmpty()) {
+            page = ticketRepository.findByCreatedBy_UsernameAndStatusInAndStatusNot(
+                    "admin",
+                    statusList,
+                    TicketStatus.CLOSED,
+                    pageable
+            );
+        } else if (typeList != null && !typeList.isEmpty()) {
+            page = ticketRepository.findByCreatedBy_UsernameAndTypeInAndStatusNot(
+                    "admin",
+                    typeList,
+                    TicketStatus.CLOSED,
+                    pageable
+            );
+        } else {
+            page = ticketRepository.findByCreatedBy_UsernameAndStatusNot(
+                    "admin",
+                    TicketStatus.CLOSED,
+                    pageable
+            );
+        }
 
         return page.map(ticket -> new ViewTicketDTO(
                 ticket.getId(),
@@ -464,34 +525,48 @@ public class TicketService {
                 ticket.getLastupdated(),
                 ticket.getStatus(),
                 ticket.getAttachmentName()
-
         ));
     }
+
+
 
     // Admin can see admin created closed tickets
     @Transactional
-
-    public Page<ViewTicketDTO> getAdminClosedTickets(Pageable pageable) {
+    public Page<ViewTicketDTO> getAdminClosedTickets(List<TicketType> typeList, Pageable pageable) {
         logger.info("Admin created closed tickets viewed");
 
-        Page<Ticket> page = ticketRepository.findByCreatedBy_UsernameAndStatus("admin",TicketStatus.CLOSED, pageable);
+        Page<Ticket> page;
+
+        if (typeList != null && !typeList.isEmpty()) {
+            page = ticketRepository.findByCreatedBy_UsernameAndStatusAndTypeIn(
+                    "admin",
+                    TicketStatus.CLOSED,
+                    typeList,
+                    pageable
+            );
+        } else {
+            page = ticketRepository.findByCreatedBy_UsernameAndStatus(
+                    "admin",
+                    TicketStatus.CLOSED,
+                    pageable
+            );
+        }
 
         return page.map(ticket -> new ViewTicketDTO(
-                        ticket.getId(),
-                        ticket.getCreatedBy().getUsername(),
-                        ticket.getType(),
-                        ticket.getTitle(),
-                        ticket.getDescription(),
-                        ticket.getCreatedAt(),
-                        ticket.getClosedOn(),
-                        ticket.getLastupdated(),
-                        ticket.getStatus(),
-                        ticket.getRisk(),
-                        ticket.getAttachmentName()
-
+                ticket.getId(),
+                ticket.getCreatedBy().getUsername(),
+                ticket.getType(),
+                ticket.getTitle(),
+                ticket.getDescription(),
+                ticket.getCreatedAt(),
+                ticket.getClosedOn(),
+                ticket.getLastupdated(),
+                ticket.getStatus(),
+                ticket.getRisk(),
+                ticket.getAttachmentName()
         ));
-
     }
+
 
     public Optional<Ticket> findById(Long id) {
         return ticketRepository.findById(id);

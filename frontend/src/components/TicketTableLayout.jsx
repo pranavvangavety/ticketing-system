@@ -12,10 +12,15 @@ import { useLocation } from "react-router-dom";
 
 
 
-function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = false, defaultTab = "open" }) {
+function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = false, defaultTab = "open" , role}) {
 
     const location = useLocation();
     const defaultTabFromNav = location.state?.defaultTab;
+
+    const [filterStatus, setFilterStatus] = useState([]);
+    const [filterType, setFilterType] = useState([]);
+
+
 
 
     const [tab, setTab] = useState(defaultTabFromNav === "closed" ? "closed" : "open");
@@ -40,12 +45,6 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
         ticketId: null,
         action: null,
     });
-
-
-
-
-
-
 
     const [pageSize] = useState(10);
 
@@ -107,6 +106,15 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
             url += `&sort=${openBackendSortField},${openSortOrder}`;
         }
 
+        if (Array.isArray(filterStatus) && filterStatus.length > 0) {
+            filterStatus.forEach(s => url += `&status=${encodeURIComponent(s)}`);
+        }
+        if (Array.isArray(filterType) && filterType.length > 0) {
+            filterType.forEach(t => url += `&type=${encodeURIComponent(t)}`);
+        }
+
+
+
 
 
         axios.get(url, { headers: { Authorization: `Bearer ${token}` } })
@@ -132,15 +140,18 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
             openBackendSortField,
             openSortOrder,
             closedBackendSortField,
-            closedSortOrder
-        ]);
+            closedSortOrder,
+            JSON.stringify(filterStatus),
+            JSON.stringify(filterType)
+
+    ]);
 
 
 
     const handleClose = (ticketId) => {
         const token = localStorage.getItem("token");
 
-        closeTicket(ticketId, fetchURLBase, token, () => {
+        closeTicket(ticketId, fetchURLBase, token,role, () => {
             setTickets((prev) => ({
                 ...prev,
                 open: prev.open.filter((t) => t.id !== ticketId)
@@ -169,6 +180,8 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
             }));
         });
     };
+
+
 
 
 
@@ -229,6 +242,10 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
                             sortField={tab === "open" ? openSortField : closedSortField}
                             sortOrder={tab === "open" ? openSortOrder : closedSortOrder}
                             toggleSort={toggleSort}
+                            filterStatus={filterStatus}
+                            setFilterStatus={setFilterStatus}
+                            filterType={filterType}
+                            setFilterType={setFilterType}
                         />
 
 

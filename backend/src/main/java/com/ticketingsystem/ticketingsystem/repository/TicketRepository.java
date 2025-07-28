@@ -120,6 +120,36 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     long countByStatus(TicketStatus status);
 
 
+    Page<Ticket> findByStatusAndType(TicketStatus ticketStatus, TicketType ticketType, Pageable pageable);
 
+    Page<Ticket> findByStatusInAndTypeInAndStatusNot(List<TicketStatus> statuses, List<TicketType> types, TicketStatus notStatus, Pageable pageable);
+
+    Page<Ticket> findByStatusInAndStatusNot(List<TicketStatus> statuses, TicketStatus notStatus, Pageable pageable);
+
+    Page<Ticket> findByTypeInAndStatusNot(List<TicketType> types, TicketStatus notStatus, Pageable pageable);
+
+    Page<Ticket> findByCreatedBy_UsernameAndStatusInAndTypeInAndStatusNot(
+            String username, List<TicketStatus> statusList, List<TicketType> typeList, TicketStatus excludeStatus, Pageable pageable
+    );
+
+    Page<Ticket> findByCreatedBy_UsernameAndStatusInAndStatusNot(
+            String username, List<TicketStatus> statusList, TicketStatus excludeStatus, Pageable pageable
+    );
+
+    Page<Ticket> findByCreatedBy_UsernameAndTypeInAndStatusNot(
+            String username, List<TicketType> typeList, TicketStatus excludeStatus, Pageable pageable
+    );
+
+    Page<Ticket> findByCreatedBy_UsernameAndStatusAndTypeIn(
+            String username, TicketStatus status, List<TicketType> typeList, Pageable pageable
+    );
+
+
+    Page<Ticket> findByCreatedBy_UsernameAndStatusAndTypeInAndRisk(String username, TicketStatus ticketStatus, List<TicketType> type, RiskLevel riskLevel, Pageable pageable);
+
+
+    Page<Ticket> findByStatusAndTypeInAndRisk(TicketStatus status, List<TicketType> type, RiskLevel risk, Pageable pageable);
+    Page<Ticket> findByStatusAndTypeIn(TicketStatus status, List<TicketType> type, Pageable pageable);
 
 }
+
