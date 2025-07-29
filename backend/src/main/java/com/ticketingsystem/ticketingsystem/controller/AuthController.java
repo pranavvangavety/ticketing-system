@@ -80,5 +80,32 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(
+            @RequestBody ForgotPasswordDTO dto
+    ) {
+        try {
+            authService.initiateForgotPassword(dto.getUsername(), dto.getEmail());
+            return ResponseEntity.ok("Password reset link sent");
+        } catch(RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(
+            @RequestBody ResetPasswordDTO dto
+    ) {
+        try {
+            authService.resetPassword(dto.getToken(), dto);
+            return ResponseEntity.ok("Password successfully reset");
+        } catch(RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+//        System.out.println("RESET PASSWORD ENDPOINT HIT");
+//        return ResponseEntity.ok("Received");
+    }
 
 }

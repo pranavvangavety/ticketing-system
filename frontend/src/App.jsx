@@ -20,6 +20,8 @@ import AdminCreatedTickets from "./Pages/AdminCreatedTickets.jsx";
 import AdminAnalytics from "./Pages/AdminAnalytics.jsx";
 import UserAnalytics from "./Pages/UserAnalytics.jsx";
 import SessionExpiredModal from "./components/SessionExpiredModal.jsx";
+import ForgotPassword from "./Pages/ForgotPassword.jsx";
+import ResetPassword from "./Pages/ResetPassword.jsx";
 
 
 function App() {
@@ -47,6 +49,24 @@ function App() {
             <Routes>
 
                 <Route path="/" element={<Login />} />
+
+                <Route
+
+                    path = "/forgot-password"
+                    element={
+                        <ForgotPassword />
+                    }
+
+                />
+
+                <Route
+
+                    path="/reset-password"
+                    element={
+                        <ResetPassword />
+                    }
+
+                />
 
                 <Route element={<Layout />}>
 
@@ -169,9 +189,7 @@ function App() {
                                 <UserAnalytics />
                             </ProtectedRoute>
                         }
-
                     />
-
                 </Route>
 
             </Routes>

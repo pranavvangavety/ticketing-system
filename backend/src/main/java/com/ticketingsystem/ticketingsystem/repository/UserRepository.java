@@ -7,6 +7,7 @@ import com.ticketingsystem.ticketingsystem.model.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
@@ -14,4 +15,5 @@ public interface UserRepository extends JpaRepository<User, String> {
     Page<User> findByUsernameNotIn(List<String> excludedUsernames, Pageable pageable);
 
 
+    Optional<User> findByUsernameAndEmail(String username, String email);
 }

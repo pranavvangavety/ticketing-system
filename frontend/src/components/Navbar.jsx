@@ -27,15 +27,20 @@ function Navbar() {
         const storedLastLogin = localStorage.getItem('lastLogin');
         if (storedLastLogin) {
             const date = new Date(storedLastLogin);
-            const formatted = new Intl.DateTimeFormat("en-IN", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-                hour: "numeric",
-                minute: "2-digit",
-                hour12: true,
-            }).format(date);
-            setLastLogin(formatted);
+            if (!isNaN(date.getTime())) {
+                const formatted = new Intl.DateTimeFormat("en-IN", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                    hour12: true,
+                }).format(date);
+                setLastLogin(formatted);
+            } else {
+                console.warn("Invalid lastLogin date:", storedLastLogin);
+                setLastLogin("Unknown");
+            }
         }
     }, []);
 

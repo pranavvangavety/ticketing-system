@@ -5,8 +5,10 @@ import com.ticketingsystem.ticketingsystem.dto.*;
 import com.ticketingsystem.ticketingsystem.exception.InvalidCredentialsException;
 import com.ticketingsystem.ticketingsystem.exception.UsernameAlreadyExistsException;
 import com.ticketingsystem.ticketingsystem.model.PasswordHistory;
+import com.ticketingsystem.ticketingsystem.model.PasswordReset;
 import com.ticketingsystem.ticketingsystem.model.User;
 import com.ticketingsystem.ticketingsystem.repository.PasswordHistoryRepository;
+import com.ticketingsystem.ticketingsystem.repository.PasswordResetRepository;
 import com.ticketingsystem.ticketingsystem.security.JwtUtil;
 import com.ticketingsystem.ticketingsystem.model.Auth;
 import com.ticketingsystem.ticketingsystem.repository.AuthRepository;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -31,6 +34,7 @@ import org.springframework.web.client.RestTemplate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -47,11 +51,19 @@ public class AuthService {
     @Autowired
     private AuthRepository authRepository;
 
+    @Autowired
+    private JavaMailSender mailSender;
+
+
 //    @Autowired
 //    private Auth auth;
 
     @Autowired
     private PasswordHistoryRepository passwordHistoryRepository;
+    @Autowired
+    private PasswordResetRepository passwordResetRepository;
+    @Autowired
+    private EmailService emailService;
 
     @Transactional // Makes sure the transaction is atomic. Prevents partial registration problem.
     public void register(RegisterDTO dto){
@@ -239,6 +251,89 @@ public class AuthService {
             logger.warn("reCAPTCHA verification failed: {}", recaptchaResponse != null ? recaptchaResponse.getErrorCodes() : "null response");
             throw new InvalidCredentialsException("reCAPTCHA verification failed");
         }
+    }
+
+    @Transactional
+    public void initiateForgotPassword(String username, String email) {
+
+        Optional<User> optionalUser = userRepository.findByUsernameAndEmail(username, email);
+        if(optionalUser.isEmpty()) {
+            throw new RuntimeException("User not found. Please enter valid details.");
+        }
+
+        Optional<Auth> authUser = authRepository.findByUsername(username);
+        if(authUser.isEmpty()) {
+            throw new RuntimeException("User not found. Please enter valid details.");
+        }
+
+        Auth auth = authUser.get();
+
+        Optional<PasswordReset> existing = passwordResetRepository.findByAuth(auth);
+        existing.ifPresent(passwordResetRepository::delete);
+
+        passwordResetRepository.deleteByAuth(auth);
+
+        String token = UUID.randomUUID().toString();
+        LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(15);
+
+        PasswordReset reset = new PasswordReset();
+        reset.setToken(token);
+        reset.setAuth(auth);
+        reset.setExpiresAt(expiresAt);
+
+        passwordResetRepository.save(reset);
+
+        String resetLink = "http://localhost:5173/reset-password?token=" + token;
+//        System.out.println("Password Reset Link: " + resetLink);
+
+        emailService.sendResetLink(email, resetLink);
+
+        logger.info("Password reset link generated for user '{}' and sent to '{}'", username, email);
+    }
+
+    @Transactional
+    public void resetPassword(String token, ResetPasswordDTO dto){
+
+        PasswordReset reset = passwordResetRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Invalid or expired token"));
+
+        if(reset.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Token expired");
+        }
+
+        if(!dto.getNewPassword().equals(dto.getConfirmNewPassword())){
+            throw new InvalidCredentialsException("Passwords do not match");
+        }
+
+        Auth auth = reset.getAuth();
+
+        List<PasswordHistory> recentPasswords = passwordHistoryRepository.findByUserOrderByCreatedOnDesc(auth);
+        boolean reused = recentPasswords.stream().anyMatch(
+                old -> passwordEncoder.matches(dto.getNewPassword(), old.getPasswordHash())
+        );
+
+        if(reused) {
+            throw new InvalidCredentialsException("You cannot reuse last 5 passwords");
+        }
+
+        auth.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        authRepository.save(auth);
+
+        PasswordHistory newHistory = new PasswordHistory();
+        newHistory.setUser(auth);
+        newHistory.setPasswordHash(auth.getPassword());
+        passwordHistoryRepository.save(newHistory);
+
+        List<PasswordHistory> allHistory = passwordHistoryRepository.findByUserOrderByCreatedOnDesc(auth);
+        if(allHistory.size() > 5) {
+            List<PasswordHistory> toDelete = allHistory.subList(5, allHistory.size());
+            passwordHistoryRepository.deleteAll(toDelete);
+        }
+
+        passwordResetRepository.delete(reset);
+
+        logger.info("Password successfully reset for user '{}'", auth.getUsername());
+
     }
 
 

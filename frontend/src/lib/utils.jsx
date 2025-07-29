@@ -187,4 +187,32 @@ export function formatShortDate(dateString) {
     });
 }
 
+export function isValidPassword(password) {
+    const lengthValid = password.length >= 8;
+    const letter = /[A-Za-z]/.test(password);
+    const number = /[0-9]/.test(password);
+    const special = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    return lengthValid && letter && number && special;
+}
+
+export function getPasswordStrength(password) {
+    let score = 0;
+
+    const lengthValid = password.length >= 8;
+    const letter = /[A-Za-z]/.test(password);
+    const number = /[0-9]/.test(password);
+    const special = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (lengthValid) score++;
+    if (letter) score++;
+    if (number) score++;
+    if (special) score++;
+
+    if (score === 4) return { label: "Strong", color: "bg-green-600" };
+    if (score === 3) return { label: "Medium", color: "bg-yellow-500" };
+    return { label: "Weak", color: "bg-red-500" };
+}
+
+
+
 

@@ -3,15 +3,8 @@ import axios from "../lib/axios.js";
 import BackButton from "../components/BackButton.jsx";
 import { useNavigate } from "react-router-dom";
 import { User, Lock, Trash2, CheckCircle, XCircle } from "lucide-react";
-
-
-function isValidPassword(password) {
-    const lengthValid = password.length >= 8;
-    const letter = /[A-Za-z]/.test(password);
-    const number = /[0-9]/.test(password);
-    const special = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-    return lengthValid && letter && number && special;
-}
+import {isValidPassword} from "../lib/utils.jsx";
+import PasswordFields from "../components/PasswordFields.jsx";
 
 function Profile() {
     const navigate = useNavigate();
@@ -70,11 +63,11 @@ function Profile() {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            setShowModal(false); // 👈 hide modal immediately
+            setShowModal(false);
             setOldPassword('');
             setNewPassword('');
             setConfirmPassword('');
-            setToast({ message: "✅ Password updated. Please log in again.", type: "success" });
+            setToast({ message: "Password updated. Please log in again.", type: "success" });
 
             setTimeout(() => {
                 localStorage.removeItem("token");
@@ -193,45 +186,34 @@ function Profile() {
                         <h2 className="text-xl font-semibold mb-6 text-center text-blue-700">Change Password</h2>
 
                         <form onSubmit={handleChangePassword} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Old Password</label>
-                                <input
-                                    type="password"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    placeholder="Enter old password"
-                                    value={oldPassword}
-                                    onChange={(e) => setOldPassword(e.target.value)}
-                                />
-                            </div>
 
-                            <div>
-                                <label className="block text-sm font-medium mb-1">New Password</label>
-                                <input
-                                    type="password"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    placeholder="Enter new password"
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                />
-                            </div>
+                            <PasswordFields
+                                oldPassword={oldPassword}
+                                newPassword={newPassword}
+                                confirmPassword={confirmPassword}
+                                setOldPassword={setOldPassword}
+                                setNewPassword={setNewPassword}
+                                setConfirmPassword={setConfirmPassword}
+                            />
 
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Confirm New Password</label>
-                                <input
-                                    type="password"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    placeholder="Re-enter new password"
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                />
-                            </div>
 
                             <button
                                 type="submit"
-                                className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition"
+
+                                disabled={
+                                    !oldPassword || !isValidPassword(newPassword) || newPassword !== confirmPassword
+                                }
+
+                                className={`w-full font-semibold py-2 rounded-lg transition
+                                ${!oldPassword || !isValidPassword(newPassword) || newPassword !== confirmPassword
+                                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                    : "bg-blue-600 text-white hover:bg-blue-700"
+                                }`}
                             >
                                 Update Password
+
                             </button>
+
                         </form>
                     </div>
                 </div>

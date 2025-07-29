@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable()) //Disabling CSRF for now
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/register", "/auth/login", "/auth/validate", "/h2-console/**").permitAll()
+                        .requestMatchers("/auth/register", "/auth/login", "/auth/validate", "/h2-console/**", "/auth/forgot-password", "/auth/reset-password").permitAll()
                         .requestMatchers("/admin/login").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/users/**").authenticated()

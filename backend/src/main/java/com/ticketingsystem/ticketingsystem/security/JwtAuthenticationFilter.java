@@ -48,16 +48,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         System.out.println("Requested URI: " + request.getRequestURI());
 
-        if (path.startsWith("/auth/")) {
+        if (path.equals("/auth/login") ||
+                path.equals("/auth/register") ||
+                path.equals("/auth/validate") ||
+                path.equals("/auth/forgot-password") ||
+                path.equals("/auth/reset-password")) {
+
             System.out.println("Skipping JWT filter for path: " + path);
             filterChain.doFilter(request, response);
             return;
         }
 
-
-
-
-        System.out.println("Auth set in context: " + SecurityContextHolder.getContext().getAuthentication());
+        System.out.println("Auth: " + SecurityContextHolder.getContext().getAuthentication());
 
         String authHeader = request.getHeader("Authorization");
 
