@@ -1,5 +1,6 @@
 package com.ticketingsystem.ticketingsystem.config;
 
+import com.ticketingsystem.ticketingsystem.model.Role;
 import com.ticketingsystem.ticketingsystem.model.User;
 import com.ticketingsystem.ticketingsystem.repository.AuthRepository;
 import com.ticketingsystem.ticketingsystem.repository.UserRepository;
@@ -38,7 +39,7 @@ public class LoadStartupUsers {
             Auth admin  = new Auth();
             admin.setUsername("admin");
             admin.setPassword(passwordEncoder.encode("admin123"));
-            admin.setRole("ADMIN");
+            admin.setRole(Role.ADMIN);
             authrepository.save(admin);
         }else{
             System.out.println(">>Admin credentials exist");
@@ -74,7 +75,7 @@ public class LoadStartupUsers {
             Auth deletedAuth = new Auth();
             deletedAuth.setUsername("deleted_user");
             deletedAuth.setPassword(passwordEncoder.encode("deleted"));
-            deletedAuth.setRole("USER");
+            deletedAuth.setRole(Role.USER);
 
             authrepository.save(deletedAuth);
         }else{

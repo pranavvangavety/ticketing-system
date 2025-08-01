@@ -4,13 +4,10 @@ package com.ticketingsystem.ticketingsystem.service;
 import com.ticketingsystem.ticketingsystem.dto.*;
 import com.ticketingsystem.ticketingsystem.exception.InvalidCredentialsException;
 import com.ticketingsystem.ticketingsystem.exception.UsernameAlreadyExistsException;
-import com.ticketingsystem.ticketingsystem.model.PasswordHistory;
-import com.ticketingsystem.ticketingsystem.model.PasswordReset;
-import com.ticketingsystem.ticketingsystem.model.User;
+import com.ticketingsystem.ticketingsystem.model.*;
 import com.ticketingsystem.ticketingsystem.repository.PasswordHistoryRepository;
 import com.ticketingsystem.ticketingsystem.repository.PasswordResetRepository;
 import com.ticketingsystem.ticketingsystem.security.JwtUtil;
-import com.ticketingsystem.ticketingsystem.model.Auth;
 import com.ticketingsystem.ticketingsystem.repository.AuthRepository;
 import jakarta.transaction.Transactional;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -76,6 +73,7 @@ public class AuthService {
         Auth auth = new Auth();
         auth.setUsername(dto.getUsername());
         auth.setPassword(hashedpassword);
+        auth.setRole(Role.USER);
 
         authRepository.save(auth);
         authRepository.flush();
@@ -124,7 +122,7 @@ public class AuthService {
         UserDetails userDetails = org.springframework.security.core.userdetails.User
                 .withUsername(auth.getUsername())
                 .password(auth.getPassword())
-                .authorities("ROLE_" + auth.getRole().toUpperCase())
+                .authorities("ROLE_" + auth.getRole().name())
                 .build();
 
         String token = jwtUtil.generateToken(userDetails);

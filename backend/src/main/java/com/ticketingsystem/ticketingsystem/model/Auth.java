@@ -1,10 +1,7 @@
 package com.ticketingsystem.ticketingsystem.model;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "auth")
@@ -16,19 +13,20 @@ public class Auth {
     @Column(nullable = false, length = 255 )
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
-    private String role;
+    private Role role;
 
     @Column(name = "hashed_token", length=255)
     private String hashedToken;
 
     //No arg constructor
     public Auth(){
-        this.role = "USER";
+        this.role = Role.USER;
     }
 
     //Constructor
-    public Auth(String username, String password, String role) {
+    public Auth(String username, String password, Role role) {
         this.username = username;
         this.password = password;
         this.role = role;
@@ -50,10 +48,10 @@ public class Auth {
         this.password = password;
     }
 
-    public String getRole(){
+    public Role getRole(){
         return role;
     }
-    public void setRole(String role){
+    public void setRole(Role role){
         this.role = role;
     }
 
