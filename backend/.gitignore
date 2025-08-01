@@ -39,10 +39,6 @@ build/
 application.properties
 application.yml
 
-# Ignore certs
-frontend/localhost-cert.pem
-frontend/localhost-key.pem
-
 
 node_modules/
 *.lock

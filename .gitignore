@@ -1,0 +1,11 @@
+# Node.js
+node_modules/
+*.log
+package-lock.json
+/node_modules/.package-lock.json
+/frontend/localhost-cert.pem
+/frontend/localhost-key.pem
+/node_modules/fs/package.json
+/package.json
+/package-lock.json
+/node_modules/fs/README.md
