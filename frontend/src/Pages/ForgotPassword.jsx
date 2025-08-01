@@ -33,9 +33,11 @@ const ForgotPassword = () => {
         <div className="min-h-screen flex items-center justify-center bg-blue-100 px-4">
             <form
                 onSubmit={handleSubmit}
-                className="bg-white shadow-lg rounded-xl p-8 max-w-md w-full space-y-6"
+                className="bg-white/80 backdrop-blur-md shadow-2xl rounded-2xl px-8 py-10 max-w-md w-full space-y-6"
             >
-                <h2 className="text-2xl font-semibold text-center text-gray-800">Forgot Password</h2>
+                <h1 className="text-3xl font-bold text-center text-indigo-700">Ticketing System</h1>
+
+                <h2 className="text-xl font-semibold text-center text-gray-800">Forgot Password</h2>
 
                 <p className="text-sm text-center text-gray-600">
                     Enter your username and registered email. We’ll send you a reset link.
@@ -43,8 +45,10 @@ const ForgotPassword = () => {
 
                 {toast.message && (
                     <div
-                        className={`text-sm text-center ${
-                            toast.type === "success" ? "text-green-600" : "text-red-600"
+                        className={`px-3 py-2 rounded text-sm text-center font-medium border ${
+                            toast.type === "success"
+                                ? "bg-green-100 text-green-700 border-green-300"
+                                : "bg-red-100 text-red-700 border-red-300"
                         }`}
                     >
                         {toast.message}
@@ -52,47 +56,48 @@ const ForgotPassword = () => {
                 )}
 
                 <div>
-                    <label className="block text-base font-medium text-gray-800 mb-1">Username</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
                     <input
                         type="text"
                         required
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        className="border border-black rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Your username"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-base font-medium text-gray-800 mb-1">Email</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                     <input
                         type="email"
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="border border-black rounded-md p-2 w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="you@example.com"
                     />
                 </div>
 
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-blue-600 text-white px-4 py-2 rounded-md flex justify-center items-center gap-2 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-black disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="w-full py-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold hover:scale-[1.02] transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {loading && <Loader2 className="animate-spin h-4 w-4" />}
                     Send Reset Link
                 </button>
 
-                <div className="text-center mt-4">
+                <div className="text-center mt-2">
                     <button
                         type="button"
                         onClick={() => navigate("/")}
-                        className="text-sm text-blue-600 hover:underline focus:outline-none"
+                        className="text-sm text-blue-600 hover:underline"
                     >
                         ← Back to Login
                     </button>
                 </div>
             </form>
-
         </div>
     );
 };

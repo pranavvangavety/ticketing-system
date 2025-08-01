@@ -189,7 +189,7 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
 
 
     return (
-        <div className="fixed inset-0 top-[64px] overflow-hidden">
+        <div className="fixed inset-x-0 bottom-0 top-[64px] overflow-hidden">
             <div className="h-full overflow-y-auto scroll-container p-6">
                 <div className="max-w-7xl mx-auto">
                     <div className="relative flex items-center h-[48px] mb-6">

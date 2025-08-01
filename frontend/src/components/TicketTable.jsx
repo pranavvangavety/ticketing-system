@@ -45,7 +45,7 @@ function TicketTable({ tickets, isOpenTab, showEdit, showRisk, onCloseTicket, on
 
     return (
 
-        <div className="overflow-x-auto rounded-xl shadow bg-white">
+        <div className="w-full rounded-xl shadow bg-white">
 
             <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
                 <h3 className="px-3 text-xl font-semibold text-gray-800">
