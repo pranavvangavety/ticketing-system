@@ -95,14 +95,21 @@ function AdminViewUsers() {
                     </div>
                 </div>
             )}
-            <div className="relative flex items-center h-[48px] mb-6">
+            <div className="relative flex items-center justify-between mb-6">
                 <div className="mt-5 z-10">
                     <BackButton />
                 </div>
-                <h2 className="absolute left-1/2 -translate-x-1/2 text-3xl font-bold text-gray-800">
+                <h2 className="text-3xl font-bold text-gray-800 text-center absolute left-1/2 -translate-x-1/2">
                     All Users
                 </h2>
+                <button
+                    onClick={() => navigate("/admin/invite-user")}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition z-10"
+                >
+                    + Invite User
+                </button>
             </div>
+
 
 
 

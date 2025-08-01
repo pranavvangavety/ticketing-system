@@ -22,6 +22,8 @@ import UserAnalytics from "./Pages/UserAnalytics.jsx";
 import SessionExpiredModal from "./components/SessionExpiredModal.jsx";
 import ForgotPassword from "./Pages/ForgotPassword.jsx";
 import ResetPassword from "./Pages/ResetPassword.jsx";
+import InviteUser from "./Pages/InviteUser.jsx";
+import Register from "./Pages/Register.jsx";
 
 
 function App() {
@@ -64,6 +66,15 @@ function App() {
                     path="/reset-password"
                     element={
                         <ResetPassword />
+                    }
+
+                />
+
+                <Route
+
+                    path = "/register"
+                    element={
+                        <Register/>
                     }
 
                 />
@@ -190,6 +201,19 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+
+
+                    <Route
+
+                        path = "/admin/invite-user"
+                        element={
+                            <ProtectedRoute>
+                                <InviteUser />
+                            </ProtectedRoute>
+                        }
+
+                    />
+
                 </Route>
 
             </Routes>

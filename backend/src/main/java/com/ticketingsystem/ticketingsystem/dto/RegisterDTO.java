@@ -31,6 +31,9 @@ public class RegisterDTO {
     @Size(max = 20, message = "Employee ID cannot be longer than 20 characters")
     private String empid;
 
+    @NotBlank(message = "Invite token is required")
+    private String token;
+
     public RegisterDTO(){
 
     }
@@ -82,6 +85,10 @@ public class RegisterDTO {
     public void setEmpid(String empid) {
         this.empid = empid;
     }
+
+    public String getToken(){return token;}
+
+    public void setToken(String token){this.token = token;}
 
     public UserDTO toUserDTO(){
         return new UserDTO(

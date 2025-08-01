@@ -3,10 +3,8 @@ package com.ticketingsystem.ticketingsystem.controller;
 import com.ticketingsystem.ticketingsystem.dto.*;
 import com.ticketingsystem.ticketingsystem.model.TicketStatus;
 import com.ticketingsystem.ticketingsystem.model.TicketType;
-import com.ticketingsystem.ticketingsystem.service.AnalyticsService;
-import com.ticketingsystem.ticketingsystem.service.AuthService;
-import com.ticketingsystem.ticketingsystem.service.TicketService;
-import com.ticketingsystem.ticketingsystem.service.UserService;
+import com.ticketingsystem.ticketingsystem.service.*;
+import jakarta.validation.Valid;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -39,6 +37,9 @@ public class AdminController {
     private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     private final AnalyticsService analyticsService;
+
+    @Autowired
+    private InviteService inviteService;
 
     public AdminController(AnalyticsService analyticsService) {
         this.analyticsService = analyticsService;
@@ -179,11 +180,12 @@ public class AdminController {
         return ResponseEntity.ok(new PaginatedResponseDTO<>(ticketPage));
     }
 
-//    @GetMapping("/summary")
-//    public ResponseEntity<AnalyticsSummaryDTO> getAnalyticsSummary() {
-//        AnalyticsSummaryDTO summary = analyticsService.getSummaryStats();
-//        return ResponseEntity.ok(summary);
-//    }
 
-
+    @PostMapping("/invite")
+    public ResponseEntity<?> sendInvite(
+            @RequestBody @Valid InviteRequestDTO request
+    ) {
+        inviteService.sendInvite(request.getEmail());
+        return ResponseEntity.ok("Invite sent to " + request.getEmail());
+    }
 }

@@ -61,9 +61,18 @@ public class AuthService {
     private PasswordResetRepository passwordResetRepository;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private InviteService inviteService;
 
     @Transactional // Makes sure the transaction is atomic. Prevents partial registration problem.
     public void register(RegisterDTO dto){
+
+        boolean validToken = inviteService.consumeToken(dto.getToken(), dto.getEmail());
+
+        if(!validToken) {
+            throw new RuntimeException("Invalid, expired or already used invite token.");
+        }
+
         if(authRepository.existsById(dto.getUsername())){
             throw new UsernameAlreadyExistsException("Username already exists!");
         }
@@ -281,7 +290,7 @@ public class AuthService {
 
         passwordResetRepository.save(reset);
 
-        String resetLink = "http://localhost:5173/reset-password?token=" + token;
+        String resetLink = "https://localhost:5173/reset-password?token=" + token;
 //        System.out.println("Password Reset Link: " + resetLink);
 
         emailService.sendResetLink(email, resetLink);
@@ -333,6 +342,8 @@ public class AuthService {
         logger.info("Password successfully reset for user '{}'", auth.getUsername());
 
     }
+
+
 
 
 

@@ -124,4 +124,30 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(response);
     }
 
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleEmailExists(EmailAlreadyExistsException ex){
+        logger.warn("Email already exists: {}", ex.getMessage());
+
+        ErrorResponse response = new ErrorResponse(
+                409,
+                ex.getMessage(),
+                null
+        );
+
+        return ResponseEntity.status(409).body(response);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
+        logger.error("Unexpected error", ex);
+        return ResponseEntity.status(500).body(new ErrorResponse(
+                500,
+                "Unexpected internal error. Please try again later.",
+                null
+        ));
+    }
+
+
+
 }
