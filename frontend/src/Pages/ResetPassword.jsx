@@ -14,12 +14,30 @@ const ResetPassword = () => {
     const [confirmNewPassword, setConfirmNewPassword] = useState("");
     const [toast, setToast] = useState({ message: "", type: "" });
     const [loading, setLoading] = useState(false);
+    const [isValidToken, setIsValidToken] = useState(null); // null = unknown, true = valid, false = invalid
+
 
     useEffect(() => {
         if (!token) {
             setToast({ message: "Invalid or missing token.", type: "error" });
+            setIsValidToken(false);
+            return;
         }
-    }, [token]);
+
+        axios
+            .post("/auth/validate-reset-token", { token })
+            .then(() => {
+                setIsValidToken(true);
+            })
+            .catch((err) => {
+                const msg = err?.response?.data || "Invalid or expired reset token.";
+                setToast({ message: msg, type: "error" });
+                setIsValidToken(false);
+                setTimeout(() => navigate("/"), 3000); // optional redirect
+            });
+    }, [token, navigate]);
+
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -54,8 +72,23 @@ const ResetPassword = () => {
         }
     };
 
+
+    if (isValidToken === false) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-blue-100 px-4">
+                <div className="bg-white shadow-md rounded-xl p-8 max-w-md w-full text-center border border-gray-400">
+                    <h1 className="text-3xl font-bold mb-4 text-gray-800">Ticketing System</h1>
+                    <h2 className="text-xl font-semibold mb-3 text-gray-800">Reset Password</h2>
+                    <p className="text-red-600 font-medium">Invalid or missing token.</p>
+                </div>
+            </div>
+        );
+    }
+
+
+
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
             <form
                 onSubmit={handleSubmit}
                 className="bg-white shadow-md rounded-xl p-8 max-w-md w-full space-y-6 border border-gray-400"
@@ -109,5 +142,7 @@ const ResetPassword = () => {
         </div>
     );
 };
+
+
 
 export default ResetPassword;
