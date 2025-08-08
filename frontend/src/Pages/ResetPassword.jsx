@@ -33,7 +33,7 @@ const ResetPassword = () => {
                 const msg = err?.response?.data || "Invalid or expired reset token.";
                 setToast({ message: msg, type: "error" });
                 setIsValidToken(false);
-                setTimeout(() => navigate("/"), 3000); // optional redirect
+                setTimeout(() => navigate("/"), 3000);
             });
     }, [token, navigate]);
 
