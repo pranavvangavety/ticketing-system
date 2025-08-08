@@ -2,8 +2,7 @@ package com.ticketingsystem.ticketingsystem.service;
 
 import com.ticketingsystem.ticketingsystem.dto.ViewUsersDTO;
 import com.ticketingsystem.ticketingsystem.exception.UnauthorizedActionException;
-import com.ticketingsystem.ticketingsystem.model.Ticket;
-import com.ticketingsystem.ticketingsystem.model.TicketStatus;
+import com.ticketingsystem.ticketingsystem.model.*;
 import com.ticketingsystem.ticketingsystem.repository.AuthRepository;
 import com.ticketingsystem.ticketingsystem.repository.TicketRepository;
 import org.springframework.data.domain.Page;
@@ -12,16 +11,13 @@ import org.springframework.stereotype.Service;
 import com.ticketingsystem.ticketingsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.ticketingsystem.ticketingsystem.dto.UserDTO;
-import com.ticketingsystem.ticketingsystem.model.User;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-
 
 
 @Service
@@ -68,7 +64,7 @@ public class UserService {
         List<Ticket> userTickets = ticketRepository.findByCreatedBy_Username(targetUsername);
         for (Ticket ticket : userTickets){
             if(ticket.getStatus() != TicketStatus.CLOSED){
-                ticketService.closeTicketbyAdmin(ticket.getId());
+                ticketService.closeTicketByAdmin(ticket.getId());
             }
             ticket.setCreatedBy(deleteUser);
         }
@@ -81,22 +77,72 @@ public class UserService {
         logger.info("{} deleted", targetUsername);
     }
 
+
     // Admin can see a list of all users
-    public Page<UserDTO> viewAllUsers(Pageable pageable) {
+    public Page<ViewUsersDTO> viewAllUsers(Pageable pageable) {
 
         List<String> exclude = List.of("admin", "deleted_user");
 
         logger.info("viewAllUsers accessed");
 
-        return userRepository.findByUsernameNotIn(exclude, pageable).map(UserDTO::new);
+        return userRepository.findByUsernameNotIn(exclude, pageable)
+                .map(
+                        user -> {
+                            Optional<Auth> authOptional = authRepository.findById(user.getUsername());
+                            Role role = null;
 
+                            if(authOptional.isPresent()) {
+                                role = authOptional.get().getRole();
+                            }
+
+                            return new ViewUsersDTO(
+                                    user.getUsername(),
+                                    user.getName(),
+                                    user.getEmail(),
+                                    user.getEmpid(),
+                                    role
+                            );
+                        }
+                );
     }
 
 
+    // To fetch profiles
     public UserDTO getProfile(String username) {
         User user = userRepository.findById(username).orElseThrow(() -> new RuntimeException("User not found"));
 
         return new UserDTO(user);
+    }
+
+
+    // Admin can change user's role
+    public void changeRole(String username, Role newRole) {
+        Optional<Auth> authOpt = authRepository.findById(username);
+
+        if(authOpt.isEmpty()) {
+            throw new UnauthorizedActionException("User not found");
+        }
+
+        Auth auth = authOpt.get();
+        auth.setRole(newRole);
+        authRepository.save(auth);
+
+        logger.info("Role for {} set to {}", username, newRole);
+    }
+
+
+    // Fetches a list of all resolvers
+    public List<String> getAllResolvers() {
+        List<Auth> allUsers = authRepository.findAll();
+        List<String> resolvers = new ArrayList<>();
+
+        for (Auth user : allUsers) {
+            if (user.getRole() == Role.RESOLVER) {
+                resolvers.add(user.getUsername());
+            }
+        }
+
+        return resolvers;
     }
 
 }

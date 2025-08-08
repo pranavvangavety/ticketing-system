@@ -24,6 +24,9 @@ import ForgotPassword from "./Pages/ForgotPassword.jsx";
 import ResetPassword from "./Pages/ResetPassword.jsx";
 import InviteUser from "./Pages/InviteUser.jsx";
 import Register from "./Pages/Register.jsx";
+import ResolverDashboard from "./Pages/ResolverDashboard.jsx";
+import ResolverAssignedTickets from "./Pages/ResolverAssignedTickets.jsx";
+import ResolverViewTickets from "./Pages/ResolverViewTickets.jsx";
 
 
 function App() {
@@ -33,18 +36,22 @@ function App() {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if(token){
+        if (token) {
             const decoded = jwtDecode(token);
-            setUsername(decoded.sub)
+            setUsername(decoded.sub);
             const roles = decoded.authorities || [];
-            if(roles.includes("ROLE_ADMIN")) {
+
+            if (roles.includes("ROLE_ADMIN")) {
                 localStorage.setItem("role", "ROLE_ADMIN");
                 setIsAdmin(true);
-            }else{
+            } else if (roles.includes("ROLE_RESOLVER")) {
+                localStorage.setItem("role", "ROLE_RESOLVER"); // ✅ Don't overwrite
+            } else {
                 localStorage.setItem("role", "ROLE_USER");
             }
         }
     }, []);
+
 
     return(
         <Router>
@@ -84,7 +91,7 @@ function App() {
                     <Route
                         path="/dashboard"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute requiredRole="ROLE_USER">
                                 <Dashboard username={username} isAdmin={isAdmin}/>
                             </ProtectedRoute>
                         }/>
@@ -110,7 +117,7 @@ function App() {
                     <Route
                         path = "/view-tickets"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute requiredRole="ROLE_USER">
                                 <ViewTickets />
                             </ProtectedRoute>
                         }
@@ -128,10 +135,8 @@ function App() {
                     <Route
                         path="/admin"
                         element={
-                            <ProtectedRoute>
-                                <AdminRoute>
-                                    <AdminDashboard />
-                                </AdminRoute>
+                            <ProtectedRoute requiredRole="ROLE_ADMIN">
+                                <AdminDashboard />
                             </ProtectedRoute>
                         }
                     />
@@ -144,10 +149,8 @@ function App() {
                     <Route
                         path="/admin/tickets"
                         element = {
-                            <ProtectedRoute>
-                                <AdminRoute>
-                                    <AdminViewTickets />
-                                </AdminRoute>
+                            <ProtectedRoute requiredRole="ROLE_ADMIN">
+                                <AdminViewTickets />
                             </ProtectedRoute>
                         }
                     />
@@ -155,7 +158,7 @@ function App() {
                     <Route
                         path="/admin/users"
                         element={
-                        <ProtectedRoute>
+                        <ProtectedRoute requiredRole="ROLE_ADMIN">
                             <AdminViewUsers />
                         </ProtectedRoute>
                         }
@@ -164,7 +167,7 @@ function App() {
                     <Route
                         path = "/admin/users/:username/tickets"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute requiredRole="ROLE_ADMIN">
                                 <AdminUserTickets />
                             </ProtectedRoute>
                         }
@@ -174,7 +177,7 @@ function App() {
 
                         path = "/admin/created-tickets"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute requiredRole="ROLE_ADMIN">
                                 <AdminCreatedTickets/>
                             </ProtectedRoute>
                         }
@@ -185,7 +188,7 @@ function App() {
 
                         path = "/admin/analytics"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute requiredRole="ROLE_ADMIN">
                                 <AdminAnalytics />
                             </ProtectedRoute>
                         }
@@ -207,8 +210,41 @@ function App() {
 
                         path = "/admin/invite-user"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute requiredRole="ROLE_ADMIN">
                                 <InviteUser />
+                            </ProtectedRoute>
+                        }
+
+                    />
+
+                    <Route
+
+                        path="/resolver"
+                        element={
+                            <ProtectedRoute>
+                                <ResolverDashboard />
+                            </ProtectedRoute>
+                        }
+
+                    />
+
+                    <Route
+
+                        path = "/resolver/tickets"
+                        element={
+                            <ProtectedRoute>
+                                <ResolverAssignedTickets />
+                            </ProtectedRoute>
+                        }
+
+                    />
+
+                    <Route
+
+                        path = "/resolver/viewtickets"
+                        element={
+                            <ProtectedRoute>
+                                <ResolverViewTickets />
                             </ProtectedRoute>
                         }
 

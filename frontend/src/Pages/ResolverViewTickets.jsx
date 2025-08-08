@@ -2,20 +2,19 @@ import React from "react";
 import { useSearchParams } from "react-router-dom";
 import TicketTableLayout from "../components/TicketTableLayout.jsx";
 
-function AdminViewTickets() {
+function ResolverViewTickets() {
     const [searchParams] = useSearchParams();
     const tabParam = searchParams.get("tab");
 
     return (
         <TicketTableLayout
-            title="All Tickets"
-            fetchURLBase="http://localhost:8080/admin/tickets"
-            role="ROLE_ADMIN"
-            showEdit={true}
+            title="My Created Tickets"
+            fetchURLBase="http://localhost:8080/tickets"
+            showEdit={false}
             showRisk={true}
             defaultTab={tabParam}
         />
     );
 }
 
-export default AdminViewTickets;
+export default ResolverViewTickets;

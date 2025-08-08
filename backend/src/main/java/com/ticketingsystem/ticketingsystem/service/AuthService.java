@@ -343,6 +343,14 @@ public class AuthService {
 
     }
 
+    public boolean isAdmin(String username) {
+        Optional<Auth> authOptional = authRepository.findByUsername(username);
+        return authOptional.isPresent() &&
+                authOptional.get().getRole() == Role.ADMIN;
+    }
+
+
+
 
 
 

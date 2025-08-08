@@ -48,7 +48,7 @@ public class Ticket {
 
     @LastModifiedDate
     @Column(name = "last_updated")
-    private LocalDateTime lastupdated;
+    private LocalDateTime lastUpdated;
 
     @Column(name = "attachment_data", columnDefinition = "TEXT")
     private String attachmentData;
@@ -58,6 +58,13 @@ public class Ticket {
 
     @Column(name = "attachment_type")
     private String attachmentType;
+
+    @Column(name = "assigned_to")
+    private String assignedTo;
+
+    @Column(name = "closed_by")
+    private String closedBy;
+
 
     public Ticket() {
 
@@ -144,12 +151,12 @@ public class Ticket {
         this.closedOn = closedOn;
     }
 
-    public LocalDateTime getLastupdated() {
-        return lastupdated;
+    public LocalDateTime getLastUpdated() {
+        return lastUpdated;
     }
 
-    public void setLastupdated(LocalDateTime lastupdated) {
-        this.lastupdated = lastupdated;
+    public void setLastUpdated(LocalDateTime lastupdated) {
+        this.lastUpdated = lastupdated;
     }
 
     public String getAttachmentData() {return attachmentData;}
@@ -164,5 +171,19 @@ public class Ticket {
 
     public void setAttachmentType(String attachmentType) {this.attachmentType = attachmentType;}
 
+    public String getAssignedTo() {
+        return assignedTo;
+    }
 
+    public void setAssignedTo(String assignedTo) {
+        this.assignedTo = assignedTo;
+    }
+
+    public String getClosedBy() {
+        return closedBy;
+    }
+
+    public void setClosedBy(String closedBy) {
+        this.closedBy = closedBy;
+    }
 }

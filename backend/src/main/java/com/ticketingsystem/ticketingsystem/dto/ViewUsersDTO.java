@@ -1,16 +1,20 @@
 package com.ticketingsystem.ticketingsystem.dto;
 
+import com.ticketingsystem.ticketingsystem.model.Role;
+
 public class ViewUsersDTO {
     private String username;
     private String name;
     private String email;
     private String empid;
+    private Role role;
 
-    public ViewUsersDTO(String username, String name, String email, String empid) {
+    public ViewUsersDTO(String username, String name, String email, String empid, Role role) {
         this.username = username;
         this.name = name;
         this.email = email;
         this.empid = empid;
+        this.role = role;
     }
 
     public ViewUsersDTO() {};
@@ -48,4 +52,11 @@ public class ViewUsersDTO {
         this.empid = empid;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 }

@@ -41,7 +41,14 @@ const TicketStatusChart = ({ endpoint }) => {
         fetchData();
     }, [endpoint]);
 
-    if (!data) return null;
+    if (!data || data.length === 0) {
+        return (
+            <div className="bg-white p-6 rounded-2xl shadow w-full max-w-3xl mx-auto mt-6 text-center text-gray-500">
+                No data available.
+            </div>
+        );
+    }
+
 
     return (
         <div className="bg-white p-6 rounded-2xl shadow w-full max-w-3xl mx-auto mt-6">

@@ -9,14 +9,16 @@ public class AdminUpdateTicketDTO {
     private String description;
     private TicketType type;
     private TicketStatus status;
+    private String assignedTo;
 
     public AdminUpdateTicketDTO(){};
 
-    public AdminUpdateTicketDTO(String title, String description, TicketType type, TicketStatus status) {
+    public AdminUpdateTicketDTO(String title, String description, TicketType type, TicketStatus status, String assignedTo) {
         this.title = title;
         this.description = description;
         this.type = type;
         this.status = status;
+        this.assignedTo = assignedTo;
     }
 
     public String getTitle() {
@@ -49,5 +51,13 @@ public class AdminUpdateTicketDTO {
 
     public void setStatus(TicketStatus status) {
         this.status = status;
+    }
+
+    public String getAssignedTo() {
+        return assignedTo;
+    }
+
+    public void setAssignedTo(String assignedTo) {
+        this.assignedTo = assignedTo;
     }
 }

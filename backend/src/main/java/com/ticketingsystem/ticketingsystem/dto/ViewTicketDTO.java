@@ -20,10 +20,14 @@ public class ViewTicketDTO {
     private TicketStatus status;
     private RiskLevel riskLevel;
     private String attachmentName;
+    private String assignedTo;
+    private String closedBy;
+
+
 
 
     public ViewTicketDTO(long id, String createdBy, TicketType type, String title, String description,
-                         LocalDateTime createdAt, LocalDateTime lastUpdated, TicketStatus status, String attachmentName) {
+                         LocalDateTime createdAt, LocalDateTime lastUpdated, TicketStatus status, String attachmentName, String assignedTo) {
         this.id = id;
         this.createdBy = createdBy;
         this.type = type;
@@ -33,12 +37,14 @@ public class ViewTicketDTO {
         this.lastUpdated = lastUpdated;
         this.status = status;
         this.attachmentName = attachmentName;
+        this.assignedTo = assignedTo;
+
     }
 
 
     public ViewTicketDTO(long id, String createdBy, TicketType type, String title, String description,
                          LocalDateTime createdAt, LocalDateTime closedOn, LocalDateTime lastUpdated,
-                         TicketStatus status, RiskLevel riskLevel, String attachmentName) {
+                         TicketStatus status, RiskLevel riskLevel, String attachmentName, String assignedTo, String closedBy) {
         this.id = id;
         this.createdBy = createdBy;
         this.type = type;
@@ -50,6 +56,8 @@ public class ViewTicketDTO {
         this.status = status;
         this.riskLevel = riskLevel;
         this.attachmentName = attachmentName;
+        this.assignedTo = assignedTo;
+        this.closedBy = closedBy;
 
     }
 
@@ -142,6 +150,22 @@ public class ViewTicketDTO {
 
     public void setAttachmentName(String attachmentName) {
         this.attachmentName = attachmentName;
+    }
+
+    public String getAssignedTo() {
+        return assignedTo;
+    }
+
+    public void setAssignedTo(String assignedTo) {
+        this.assignedTo = assignedTo;
+    }
+
+    public String getClosedBy() {
+        return closedBy;
+    }
+
+    public void setClosedBy(String closedBy) {
+        this.closedBy = closedBy;
     }
 }
 

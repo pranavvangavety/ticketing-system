@@ -13,6 +13,12 @@ function AdminViewUsers() {
         show: false,
         user: null,
     });
+    const [changeRoleModal, setChangeRoleModal] = useState({
+        show: false,
+        user: null,
+        selectedRole: "",
+    });
+
 
     useEffect(() => {
         document.body.classList.add("no-scroll");
@@ -58,7 +64,39 @@ function AdminViewUsers() {
             });
     }
 
+    function handleChangeRole() {
+        const token = localStorage.getItem("token");
+        const { user, selectedRole } = changeRoleModal;
 
+        axios.put(
+            "http://localhost:8080/admin/users/change-role",
+            {
+                username: user.username,
+                newRole: selectedRole,
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        )
+            .then(() => {
+                setToast({ message: "Role updated successfully", type: "success" });
+                setUsers((prev) =>
+                    prev.map((u) =>
+                        u.username === user.username
+                            ? { ...u, role: selectedRole }
+                            : u
+                    )
+                );
+                setChangeRoleModal({ show: false, user: null, selectedRole: "" });
+            })
+            .catch((err) => {
+                console.error("Error updating role:", err);
+                setToast({ message: "Failed to update role", type: "error" });
+                setTimeout(() => setToast({ message: "", type: "" }), 2000);
+            });
+    }
 
     return (
         <div className="p-6">
@@ -95,6 +133,47 @@ function AdminViewUsers() {
                     </div>
                 </div>
             )}
+
+            {changeRoleModal.show && (
+                <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-sm text-center">
+                        <h3 className="text-lg font-semibold mb-4">Change Role</h3>
+                        <p className="text-sm mb-4">
+                            Change role for <span className="font-bold">{changeRoleModal.user.username}</span>
+                        </p>
+                        <select
+                            value={changeRoleModal.selectedRole}
+                            onChange={(e) =>
+                                setChangeRoleModal((prev) => ({
+                                    ...prev,
+                                    selectedRole: e.target.value,
+                                }))
+                            }
+                            className="w-full px-3 py-2 border rounded-md mb-6"
+                        >
+                            <option value="USER">USER</option>
+                            <option value="RESOLVER">RESOLVER</option>
+                            {/*<option value="ADMIN">ADMIN</option>*/}
+                        </select>
+
+                        <div className="flex justify-center gap-4">
+                            <button
+                                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                                onClick={handleChangeRole}
+                            >
+                                Confirm
+                            </button>
+                            <button
+                                onClick={() => setChangeRoleModal({ show: false, user: null, selectedRole: "" })}
+                                className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="relative flex items-center justify-between mb-6">
                 <div className="mt-5 z-10">
                     <BackButton />
@@ -110,10 +189,6 @@ function AdminViewUsers() {
                 </button>
             </div>
 
-
-
-
-
             <div className="relative overflow-x-visible shadow rounded">
                 <table className="min-w-full text-sm text-left text-gray-700">
                     <thead className="bg-gray-100 text-xs uppercase font-semibold text-gray-600">
@@ -123,6 +198,7 @@ function AdminViewUsers() {
                             <th className="px-4 py-3">Username</th>
                             <th className="px-4 py-3">Name</th>
                             <th className="px-4 py-3">Email ID</th>
+                            <th className="px-4 py-3">Role</th>
                             <th className="px-4 py-3 text-center">Actions</th>
                         </tr>
                     </thead>
@@ -134,11 +210,19 @@ function AdminViewUsers() {
                             <td className="px-4 py-2">{user.username}</td>
                             <td className="px-4 py-2">{user.name}</td>
                             <td className="px-4 py-2">{user.email}</td>
+                            <td className="px-4 py-2">{user.role}</td>
                             <td className="px-4 py-2 text-center relative">
                                 <UserActionsDropdown
                                     user={user}
                                     onDelete={(user) => setDeleteUserModal({ show: true, user })}
                                     onViewTickets={(user) => navigate(`/admin/users/${user.username}/tickets`)}
+                                    onChangeRole={(user) =>
+                                        setChangeRoleModal({
+                                            show: true,
+                                            user,
+                                            selectedRole: user.role,
+                                        })
+                                    }
                                 />
 
                             </td>

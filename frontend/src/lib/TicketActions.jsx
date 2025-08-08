@@ -1,9 +1,10 @@
 import axios from "../lib/axios.js";
 
 export function closeTicket(ticketId, fetchURLBase, token, role, onSuccess, onError) {
-    const url = role === 'admin'
-        ? `/admin/tickets/${ticketId}/close`
-        : `${fetchURLBase}/${ticketId}/close`;
+    const url =
+        role === 'admin'
+            ? `/admin/tickets/${ticketId}/close`
+                : `tickets/resolver/${ticketId}/close`;
 
     axios
         .put(url, {}, {
@@ -17,6 +18,10 @@ export function closeTicket(ticketId, fetchURLBase, token, role, onSuccess, onEr
             onError?.(err);
         });
 }
+
+
+
+
 
 export function deleteTicket(ticketId, fetchURLBase, token, onSuccess, onError) {
     axios

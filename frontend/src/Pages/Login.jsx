@@ -47,9 +47,12 @@ function Login() {
                 const role = decoded.authorities?.[0];
                 localStorage.setItem("role", role);
                 localStorage.setItem('username', username);
+                // console.log("CURRENT ROLE:", role);
+
                 setTimeout(() => {
-                    navigate(role === "ROLE_ADMIN" ? "/admin" : "/dashboard");
+                    navigate(role === "ROLE_ADMIN" ? "/admin" : role === "ROLE_RESOLVER" ? "/resolver" : "/dashboard");
                 }, 500);
+
             })
             .catch(error => {
                 setErrorMessage(error.response?.data?.message || 'Login Failed');

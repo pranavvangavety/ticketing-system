@@ -71,7 +71,17 @@ function TicketConfirmation() {
                         Return to Dashboard
                     </button>
                     <button
-                        onClick={() => navigate(isAdmin ? "/admin/created-tickets" : "/view-tickets")}
+                        onClick={() => {
+                            const role = localStorage.getItem("role");
+                            if (role === "ROLE_ADMIN") {
+                                navigate("/admin/created-tickets");
+                            } else if (role === "ROLE_RESOLVER") {
+                                navigate("/resolver/tickets");
+                            } else {
+                                navigate("/view-tickets");
+                            }
+                        }}
+
                         className="px-5 py-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-400"
                     >
                         View My Tickets

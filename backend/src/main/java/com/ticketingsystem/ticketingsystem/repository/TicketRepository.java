@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.ticketingsystem.ticketingsystem.model.Ticket;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 @Repository
@@ -120,8 +121,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     long countByStatus(TicketStatus status);
 
 
-    Page<Ticket> findByStatusAndType(TicketStatus ticketStatus, TicketType ticketType, Pageable pageable);
-
     Page<Ticket> findByStatusInAndTypeInAndStatusNot(List<TicketStatus> statuses, List<TicketType> types, TicketStatus notStatus, Pageable pageable);
 
     Page<Ticket> findByStatusInAndStatusNot(List<TicketStatus> statuses, TicketStatus notStatus, Pageable pageable);
@@ -151,5 +150,49 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     Page<Ticket> findByStatusAndTypeInAndRisk(TicketStatus status, List<TicketType> type, RiskLevel risk, Pageable pageable);
     Page<Ticket> findByStatusAndTypeIn(TicketStatus status, List<TicketType> type, Pageable pageable);
 
+    Page<Ticket> findByAssignedToAndStatusIn(String assignedTo, List<TicketStatus> statuses, Pageable pageable);
+
+    Page<Ticket> findByAssignedToAndTypeInAndStatusIn(String assignedTo, List<TicketType> type, List<TicketStatus> status, Pageable pageable);
+
+    Page<Ticket> findByAssignedToAndStatusInAndTypeIn(String assignedTo, List<TicketStatus> statuses, List<TicketType> types, Pageable pageable);
+
+    Page<Ticket> findByStatusInAndTypeIn(List<TicketStatus> statuses, List<TicketType> typeList, Pageable pageable);
+
+    Page<Ticket> findByStatusIn(List<TicketStatus> statuses, Pageable pageable);
+
+    Page<Ticket> findByCreatedBy_UsernameAndStatusInAndTypeIn(String username, List<TicketStatus> statuses, List<TicketType> typeList, Pageable pageable);
+
+    Page<Ticket> findByCreatedBy_UsernameAndStatusIn(String username, List<TicketStatus> statuses, Pageable pageable);
+
+    Page<Ticket> findByAssignedTo(String assignedTo, Pageable pageable);
+
+    Page<Ticket> findByAssignedToAndTypeIn(String resolverUsername, List<TicketType> type, Pageable pageable);
+
+    Page<Ticket> findByClosedByAndStatus(String closedBy, TicketStatus status, Pageable pageable);
+
+    Page<Ticket> findByClosedByAndStatusAndTypeIn(String closedBy, TicketStatus status, List<TicketType> type, Pageable pageable);
+
+    Page<Ticket> findByClosedByAndStatusAndRiskIn(String closedBy, TicketStatus status, List<RiskLevel> risk, Pageable pageable);
+
+    Page<Ticket> findByClosedByAndStatusAndTypeInAndRiskIn(
+            String closedBy,
+            TicketStatus status,
+            List<TicketType> type,
+            List<RiskLevel> risk,
+            Pageable pageable
+    );
+
+    Page<Ticket> findByAssignedToAndStatus(String assignedTo, TicketStatus status, Pageable pageable);
+
+    Page<Ticket> findByAssignedToAndStatusAndRiskIn(String assignedTo, TicketStatus status, List<RiskLevel> risk, Pageable pageable);
+
+    Page<Ticket> findByAssignedToAndStatusAndTypeIn(String assignedTo, TicketStatus status, List<TicketType> type, Pageable pageable);
+
+    Page<Ticket> findByAssignedToAndStatusAndTypeInAndRiskIn(String assignedTo, TicketStatus status, List<TicketType> type, List<RiskLevel> risk, Pageable pageable);
+
+
+
+
 }
+
 

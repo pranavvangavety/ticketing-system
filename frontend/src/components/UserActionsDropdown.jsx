@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { MoreVertical } from "lucide-react";
 
-function UserActionsDropdown({ user, onDelete, onViewTickets }) {
+function UserActionsDropdown({ user, onDelete, onViewTickets, onChangeRole }) {
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef(null);
 
@@ -17,7 +17,6 @@ function UserActionsDropdown({ user, onDelete, onViewTickets }) {
 
     return (
         <div className="relative inline-block text-left" ref={dropdownRef}>
-
             <button
                 onClick={() => setOpen(!open)}
                 className="p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
@@ -33,7 +32,7 @@ function UserActionsDropdown({ user, onDelete, onViewTickets }) {
                             setOpen(false);
                             onViewTickets(user);
                         }}
-                        className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 transition"
+                        className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 transition"
                     >
                         View Tickets
                     </button>
@@ -41,9 +40,19 @@ function UserActionsDropdown({ user, onDelete, onViewTickets }) {
                     <button
                         onClick={() => {
                             setOpen(false);
+                            onChangeRole(user);
+                        }}
+                        className="block w-full px-4 py-2 text-left text-sm text-indigo-600 hover:bg-indigo-50 transition"
+                    >
+                        Change Role
+                    </button>
+
+                    <button
+                        onClick={() => {
+                            setOpen(false);
                             onDelete(user);
                         }}
-                        className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 focus:bg-red-100 transition"
+                        className="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition"
                     >
                         Delete User
                     </button>

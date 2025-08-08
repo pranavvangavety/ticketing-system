@@ -6,13 +6,19 @@ import TicketTable from "./TicketTable.jsx";
 import { closeTicket, deleteTicket } from "../lib/ticketActions.jsx";
 import ConfirmModal from "./ConfirmModal.jsx";
 import { useLocation } from "react-router-dom";
+import ResolverDropdown from "./ResolverDropdown.jsx";
 
 
 
 
 
 
-function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = false, defaultTab = "open" , role}) {
+function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = false, defaultTab = "open"}) {
+
+    const role = localStorage.getItem("role");
+    // console.log("CURRENT ROLE:", role);
+
+
 
     const location = useLocation();
     const defaultTabFromNav = location.state?.defaultTab;
@@ -20,15 +26,18 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
     const [filterStatus, setFilterStatus] = useState([]);
     const [filterType, setFilterType] = useState([]);
 
+    const [tab, setTab] = useState(
+        defaultTabFromNav === "closed" ? "closed" :
+            defaultTabFromNav === "assigned" ? "assigned" : "open"
+    );
 
-
-
-    const [tab, setTab] = useState(defaultTabFromNav === "closed" ? "closed" : "open");
 
     const [pagination, setPagination] = useState({
         open: { page: 0, totalPages: 1, totalCount: 0 },
+        assigned: { page: 0, totalPages: 1, totalCount: 0 },
         closed: { page: 0, totalPages: 1, totalCount: 0 }
     });
+
 
     const [editModal, setEditModal] = useState({ show: false, ticket: null });
     const [openBackendSortField, setOpenBackendSortField] = useState("createdAt");
@@ -37,8 +46,10 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
 
     const [tickets, setTickets] = useState({
         open: [],
+        assigned: [],
         closed: []
     });
+
 
     const [confirmModal, setConfirmModal] = useState({
         show: false,
@@ -48,27 +59,59 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
 
     const [pageSize] = useState(10);
 
+    const [assignedSortField, setAssignedSortField] = useState("createdAt");
+    const [assignedSortOrder, setAssignedSortOrder] = useState("asc");
+    const [assignedBackendSortField, setAssignedBackendSortField] = useState("createdAt");
+
+
+    const [resolvers, setResolvers] = useState([]);
+    const [assignModal, setAssignModal] = useState({ show: false, ticketId: null });
+    const [selectedResolver, setSelectedResolver] = useState("");
+    const [reloadTrigger, setReloadTrigger] = useState(0);
+
+
+    useEffect(() => {
+        if (role === "ROLE_ADMIN") {
+            // console.log("Fetching resolvers");
+            const token = localStorage.getItem("token");
+
+            axios.get("/admin/resolvers", {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+                .then(res => {
+                    // console.log("Resolvers fetched:", res.data);
+                    setResolvers(res.data);
+                })
+                .catch(err => console.error("Failed to fetch resolvers", err));
+        }
+    }, [role]);
+
 
     useEffect(() => {
         const token = localStorage.getItem("token");
 
-        ["open", "closed"].forEach((type) => {
+        ["open", "assigned", "closed"].forEach((tabKey) => {
             axios
-                .get(`${fetchURLBase}/${type}?page=0&size=1`, {
+                .get(`${fetchURLBase}/${tabKey}?page=0&size=1`, {
                     headers: { Authorization: `Bearer ${token}` }
                 })
                 .then((res) => {
                     setPagination((prev) => ({
                         ...prev,
-                        [type]: {
-                            ...prev[type],
+                        [tabKey]: {
+                            ...prev[tabKey],
                             totalCount: res.data.totalElements || 0
                         }
                     }));
                 })
-                .catch((err) => console.error(`Failed to fetch ${type} count`, err));
+                .catch((err) =>
+                    console.error(`Failed to fetch ${tabKey} count`, err)
+                );
         });
-    }, [fetchURLBase]);
+    }, [fetchURLBase, reloadTrigger]);
+
+
+
 
     const [openSortField, setOpenSortField] = useState("createdAt");
     const [openSortOrder, setOpenSortOrder] = useState("asc");
@@ -77,51 +120,60 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
     const [closedSortOrder, setClosedSortOrder] = useState("desc");
 
     const toggleSort = (field, isOpen, backendField = field) => {
-        if (isOpen) {
+        if (tab === "open") {
             setOpenSortField(field);
             setOpenBackendSortField(backendField);
             setOpenSortOrder(prev => (openSortField === field && openSortOrder === "asc" ? "desc" : "asc"));
+        } else if (tab === "assigned") {
+            setAssignedSortField(field);
+            setAssignedBackendSortField(backendField);
+            setAssignedSortOrder(prev => (assignedSortField === field && assignedSortOrder === "asc" ? "desc" : "asc"));
         } else {
             setClosedSortField(field);
             setClosedBackendSortField(backendField);
             setClosedSortOrder(prev => (closedSortField === field && closedSortOrder === "asc" ? "desc" : "asc"));
         }
+
     };
-
-
-
-
-
 
     useEffect(() => {
         const token = localStorage.getItem("token");
         const currentPage = pagination[tab]?.page ?? 0;
 
-        const sortField = tab === "open" ? openBackendSortField : closedBackendSortField;
-        const sortOrder = tab === "open" ? openSortOrder : closedSortOrder;
-        let url = `${fetchURLBase}/${tab}?page=${currentPage}&size=${pageSize}`;
+        const sortField = (
+            tab === "open" ? openBackendSortField :
+                tab === "assigned" ? assignedBackendSortField :
+                    closedBackendSortField
+        );
+
+        const sortOrder = (
+            tab === "open" ? openSortOrder :
+                tab === "assigned" ? assignedSortOrder :
+                    closedSortOrder
+        );
+
+        const baseUrl = `${fetchURLBase}/${tab}`;
+        let url = `${baseUrl}?page=${currentPage}&size=${pageSize}`;
+
+        // Sorting
         if (tab === "closed") {
-            url += `&sortField=${closedBackendSortField}&sortOrder=${closedSortOrder}`;
+            url += `&sortField=${sortField}&sortOrder=${sortOrder}`;
         } else {
-            url += `&sort=${openBackendSortField},${openSortOrder}`;
+            url += `&sort=${sortField},${sortOrder}`;
         }
 
-        if (Array.isArray(filterStatus) && filterStatus.length > 0) {
-            filterStatus.forEach(s => url += `&status=${encodeURIComponent(s)}`);
-        }
-        if (Array.isArray(filterType) && filterType.length > 0) {
-            filterType.forEach(t => url += `&type=${encodeURIComponent(t)}`);
-        }
+        // Filters
+        filterStatus?.forEach(s => {
+            url += `&status=${encodeURIComponent(s)}`;
+        });
 
-
-
-
+        filterType?.forEach(t => {
+            url += `&type=${encodeURIComponent(t)}`;
+        });
 
         axios.get(url, { headers: { Authorization: `Bearer ${token}` } })
             .then((res) => {
-                let fetchedTickets = res.data.content;
-
-                setTickets((prev) => ({ ...prev, [tab]: fetchedTickets }));
+                setTickets((prev) => ({ ...prev, [tab]: res.data.content }));
                 setPagination((prev) => ({
                     ...prev,
                     [tab]: {
@@ -132,38 +184,46 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
                 }));
             })
             .catch((err) => console.error(`Error fetching ${tab} tickets:`, err));
-        }, [
-            tab,
-            pagination[tab].page,
-            pageSize,
-            fetchURLBase,
-            openBackendSortField,
-            openSortOrder,
-            closedBackendSortField,
-            closedSortOrder,
-            JSON.stringify(filterStatus),
-            JSON.stringify(filterType)
-
+    }, [
+        tab,
+        pagination.open.page,
+        pagination.assigned.page,
+        pagination.closed.page,
+        pageSize,
+        fetchURLBase,
+        openBackendSortField,
+        openSortOrder,
+        assignedBackendSortField,
+        assignedSortOrder,
+        closedBackendSortField,
+        closedSortOrder,
+        JSON.stringify(filterStatus),
+        JSON.stringify(filterType),
+        reloadTrigger
     ]);
-
 
 
     const handleClose = (ticketId) => {
         const token = localStorage.getItem("token");
 
-        closeTicket(ticketId, fetchURLBase, token,role, () => {
-            setTickets((prev) => ({
-                ...prev,
-                open: prev.open.filter((t) => t.id !== ticketId)
-            }));
+        closeTicket(ticketId, fetchURLBase, token, role, () => {
+            setTickets((prev) => {
+                const updated = { ...prev };
 
-            setPagination((prev) => ({
-                ...prev,
-                open: { ...prev.open, totalCount: prev.open.totalCount - 1 },
-                closed: { ...prev.closed, totalCount: prev.closed.totalCount + 1 }
-            }));
+                if (tab === "open") {
+                    updated.open = prev.open.filter((t) => t.id !== ticketId);
+                } else if (tab === "assigned") {
+                    updated.assigned = prev.assigned.filter((t) => t.id !== ticketId);
+                }
+
+                return updated;
+            });
+
+            setReloadTrigger(prev => prev + 1);
         });
     };
+
+
 
     const handleDelete = (ticketId) => {
         const token = localStorage.getItem("token");
@@ -181,13 +241,6 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
         });
     };
 
-
-
-
-
-
-
-
     return (
         <div className="fixed inset-x-0 bottom-0 top-[64px] overflow-hidden">
             <div className="h-full overflow-y-auto scroll-container p-6">
@@ -201,10 +254,8 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
                         </h2>
                     </div>
 
-
-
                     <div className="flex justify-center gap-4 my-6">
-                        {["open", "closed"].map((type) => (
+                        {["open", "assigned", "closed"].map((type) => (
                             <button
                                 key={type}
                                 onClick={() => {
@@ -223,7 +274,7 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
                                         : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                                 }`}
                             >
-                                {type === "open" ? "Open Tickets" : "Closed Tickets"}
+                                {type === "open" ? "Open Tickets" : type === "assigned" ? "Assigned Tickets" : "Closed Tickets"}
                                 <span className="ml-2 text-sm bg-white/20 rounded-full px-2 py-0.5">
                                     {pagination[type].totalCount}
                                 </span>
@@ -236,6 +287,7 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
                         <TicketTable
                             tickets={tickets[tab]}
                             isOpenTab={tab === "open"}
+                            isAssignedTab={tab === "assigned"}
                             showEdit={showEdit}
                             onEditTicket={(ticketId) =>
                                 setEditModal({
@@ -243,17 +295,35 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
                                     ticket: tickets[tab].find((t) => t.id === ticketId),
                                 })
                             }
-
                             showRisk={showRisk}
-                            onCloseTicket={(id) => setConfirmModal({ show: true, ticketId: id, action: "close" })}
-                            onDeleteTicket={(id) => setConfirmModal({ show: true, ticketId: id, action: "delete" })}
-                            sortField={tab === "open" ? openSortField : closedSortField}
-                            sortOrder={tab === "open" ? openSortOrder : closedSortOrder}
+
+                            onCloseTicket={role !== "ROLE_" +
+                            "USER" ? (id) => setConfirmModal({ show: true, ticketId: id, action: "close" }) : null}
+                            onDeleteTicket={role === "ROLE_ADMIN" ? (id) => setConfirmModal({ show: true, ticketId: id, action: "delete" }) : null}
+
+                            sortField={
+                                tab === "open"
+                                    ? openSortField
+                                    : tab === "assigned"
+                                        ? assignedSortField
+                                        : closedSortField
+                            }
+                            sortOrder={
+                                tab === "open"
+                                    ? openSortOrder
+                                    : tab === "assigned"
+                                        ? assignedSortOrder
+                                        : closedSortOrder
+                            }
+
                             toggleSort={toggleSort}
                             filterStatus={filterStatus}
                             setFilterStatus={setFilterStatus}
                             filterType={filterType}
                             setFilterType={setFilterType}
+
+                            onAssignResolver={(id) => setAssignModal({ show: true, ticketId: id })}
+                            role={role}
                         />
 
 
@@ -295,6 +365,72 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
                         }}
                         onCancel={() => setConfirmModal({ show: false, ticketId: null, action: null })}
                     />
+
+                    {assignModal.show && (
+                        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
+                            <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md">
+                                <h3 className="text-lg font-semibold mb-4 text-center">Assign Resolver</h3>
+
+                                <ResolverDropdown
+                                    selected={selectedResolver}
+                                    onSelect={setSelectedResolver}
+                                    resolvers={resolvers}
+                                />
+
+
+                                <div className="flex justify-end gap-4">
+                                    <button
+                                        onClick={() => {
+                                            const token = localStorage.getItem("token");
+                                            axios
+                                                .put(`/admin/tickets/assign`, null, {
+                                                    params: {
+                                                        id: assignModal.ticketId,
+                                                        resolverUsername: selectedResolver,
+                                                    },
+                                                    headers: { Authorization: `Bearer ${token}` },
+                                                })
+                                                .then(() => {
+                                                    setAssignModal({ show: false, ticketId: null });
+                                                    setSelectedResolver("");
+
+                                                    setReloadTrigger(prev => prev + 1);
+
+                                                    setPagination((prev) => ({
+                                                        ...prev,
+                                                        [tab]: { ...prev[tab], page: 0 }
+                                                    }));
+
+                                                    if(tab === "open") {
+                                                        setTab("assigned");
+                                                    }
+                                                })
+
+                                                .catch((err) => {
+                                                    console.error("Assign failed", err);
+                                                    alert("Failed to assign resolver");
+                                                });
+
+                                        }}
+                                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                                    >
+                                        Assign
+                                    </button>
+
+                                    <button
+                                        onClick={() => {
+                                            setAssignModal({ show: false, ticketId: null });
+                                            setSelectedResolver("");
+                                        }}
+                                        className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
 
                     {editModal?.show && (
                         <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
@@ -369,6 +505,7 @@ function TicketTableLayout({ title, fetchURLBase, showEdit = false, showRisk = f
                                             <option value="CLOSED">CLOSED</option>
                                         </select>
                                     </div>
+
 
                                     <div className="flex justify-end gap-4">
                                         <button

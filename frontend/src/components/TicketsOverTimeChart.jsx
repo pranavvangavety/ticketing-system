@@ -35,6 +35,15 @@ const TicketsOverTimeChart = ({ endpoint }) => {
         fetchChartData();
     }, [endpoint]);
 
+    if (!data || data.length === 0) {
+        return (
+            <div className="bg-white p-6 rounded-2xl shadow w-full max-w-3xl mx-auto mt-6 text-center text-gray-500">
+                No data available.
+            </div>
+        );
+    }
+
+
     return (
         <div className="bg-gradient-to-br from-white to-blue-50 p-6 rounded-2xl shadow-md w-full max-w-4xl mx-auto">
             <ResponsiveContainer width="100%" height={220}>
